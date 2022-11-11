@@ -55,6 +55,7 @@ const ChooseCategory = ({ navigation }) => {
     }, []);
     return (
         <View style={styles.container}>
+
             <Text style={styles.heading}>Choose your category</Text>
             <FlatList
                 style={styles.courseList}
@@ -72,12 +73,12 @@ export default ChooseCategory;
 
 const styles = StyleSheet.create({
     container: {
-        paddingTop: '11%',
+        paddingTop: '15%',
         flex: 1,
-        backgroundColor:"#23AAFA",
+        backgroundColor: "#23AAFA",
         paddingHorizontal: 5
-      },
-      heading:{color: "#fff", fontWeight: 'bold', fontSize: 18, paddingLeft: 10, paddingBottom: 15, lineHeight: 23},
+    },
+    heading: { color: "#fff", fontWeight: 'bold', fontSize: 18, paddingLeft: 10, paddingBottom: 15, lineHeight: 23 },
     courseList: {
         flex: 1,
     },
@@ -90,8 +91,8 @@ const styles = StyleSheet.create({
 const Course = ({ course }) => {
     return (
         <View style={courseStyles.container}>
-            <Image source={course.image} style={courseStyles.image}/>
-            <Text style={[courseStyles.text,{color: course.selected ? "#23AAFA" : ""}]}>{course.name}</Text>
+            <Image source={course.image} style={courseStyles.image} />
+            <Text style={[courseStyles.text, { color: course.selected ? "#23AAFA" : "#000" }]}>{course.name}</Text>
         </View>
     );
 };
@@ -99,15 +100,15 @@ const Course = ({ course }) => {
 const courseStyles = StyleSheet.create({
     container: {
         marginBottom: 10,
-        height: 150,
-        width: 180,
+        height: 140,
+        width: 165,
         backgroundColor: "#FFFFFF",
         borderRadius: 12,
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: '8%'
     },
-    image:{height: 50, width: 38, resizeMode: 'contain'},
-    text:{color:"#989DA0", textAlign: 'center'}
-  
+    image: { height: 48, width: 38, resizeMode: 'contain' },
+    text: { color: "#989DA0", textAlign: 'center' }
+
 });

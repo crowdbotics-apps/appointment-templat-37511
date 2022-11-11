@@ -1264,16 +1264,46 @@
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
 
+"@screens/appointment@file:./screens/appointmentScreen":
+  version "1.0.0"
+
 "@screens/choose-category@file:./screens/categoryScreen":
+  version "1.0.0"
+
+"@screens/doctor-profile@file:./screens/doctorProfileScreen":
   version "1.0.0"
 
 "@screens/home@file:./screens/homeScreen":
   version "1.0.0"
 
+"@screens/my-appointments@file:./screens/myAppointmentsScreen":
+  version "1.0.0"
+
 "@screens/onboarding@file:./screens/onboardingScreen":
   version "1.0.0"
 
+"@screens/patient-messages@file:./screens/patientMessagesScreen":
+  version "1.0.0"
+
+"@screens/patient-notifications@file:./screens/patientNotificationsScreen":
+  version "1.0.0"
+
+"@screens/patient-profile@file:./screens/patientProfileScreen":
+  version "1.0.0"
+
+"@screens/payment@file:./screens/paymentScreen":
+  version "1.0.0"
+
+"@screens/profile@file:./screens/profileScreen":
+  version "1.0.0"
+
+"@screens/schedule@file:./screens/scheduleScreen":
+  version "1.0.0"
+
 "@screens/search@file:./screens/searchScreen":
+  version "1.0.0"
+
+"@screens/wallet@file:./screens/walletScreen":
   version "1.0.0"
 
 "@screens/welcome@file:./screens/welcomeScreen":

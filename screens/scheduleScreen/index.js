@@ -1,10 +1,10 @@
 
-import { View, StyleSheet, Image, Text, Pressable } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, StyleSheet, Image, Text, Pressable, ScrollView } from 'react-native'
+import React from 'react'
+
 
 
 const Schedule = ({ navigation }) => {
-    const [orderStatus, setOrderStatus] = useState([]);
 
     return (
         <View style={styles.container}>
@@ -22,9 +22,13 @@ const Schedule = ({ navigation }) => {
             </View>
             <View style={styles.topWrapper}>
                 <View style={styles.topContainer}>
-                    <Image source={require("./assets/prev.png")} style={styles.prev} />
+                    <Image source={require(
+                        // @ts-ignore
+                        "./assets/prev.png")} style={styles.prev} />
                     <Text style={styles.dateText}>June 2022</Text>
-                    <Image source={require("./assets/next.png")} style={styles.prev} />
+                    <Image source={require(
+                        // @ts-ignore
+                        "./assets/next.png")} style={styles.prev} />
                 </View>
                 <View style={[styles.inner, { marginVertical: 20, paddingHorizontal: 10 }]}>
                     <View style={styles.dateContainer}>
@@ -63,53 +67,63 @@ const Schedule = ({ navigation }) => {
                 <Text style={styles.subTitle}></Text>
             </View>
 
-            <View style={styles.mainContainer}>
-                <View style={styles.leftSection}>
-                    <Text>09:00 am</Text>
-                    <Text>10:00 am</Text>
-                    <Text>11:00 am</Text>
-                    <Text>12:00 pm</Text>
-                    <Text>01:00 pm</Text>
-                    <Text>02:00 pm</Text>
-                </View>
-                <Image source={require("./assets/progress.png")} style={styles.progress} />
-                <View style={[styles.leftSection, { height: 540 }]}>
-                    <View style={styles.docContainer}>
-                        <Text style={styles.titleText}>Tara Tomphson</Text>
-                        <View style={styles.inner}>
-                            <Text style={styles.descr}>Nuclear cardiac stress test</Text>
-                            <Image source={require("./assets/check.png")} style={styles.check} />
-                        </View>
+            <ScrollView>
+                <View style={styles.mainContainer}>
+                    <View style={styles.leftSection}>
+                        <Text>09:00 am</Text>
+                        <Text>10:00 am</Text>
+                        <Text>11:00 am</Text>
+                        <Text>12:00 pm</Text>
+                        <Text>01:00 pm</Text>
+                        <Text>02:00 pm</Text>
+                    </View>
+                    <Image source={require(
+                        // @ts-ignore
+                        "./assets/progress.png")} style={styles.progress} />
+                    <View style={[styles.leftSection, { height: 540 }]}>
+                        <View style={styles.docContainer}>
+                            <Text style={styles.titleText}>Tara Tomphson</Text>
+                            <View style={styles.inner}>
+                                <Text style={styles.descr}>Nuclear cardiac stress test</Text>
+                                <Image source={require(
+                                    // @ts-ignore
+                                    "./assets/check.png")} style={styles.check} />
+                            </View>
 
-                    </View>
-                    <View style={styles.docContainer}>
-                        <Text style={styles.titleText}>Tara Tomphson</Text>
-                        <View style={styles.inner}>
-                            <Text style={styles.descr}>Nuclear cardiac stress test</Text>
-                            <Image source={require("./assets/check.png")} style={styles.check} />
                         </View>
-                    </View>
-                    <View style={styles.docContainer}>
-                        <Text style={styles.titleText}>Tara Tomphson</Text>
-                        <View style={styles.inner}>
-                            <Text style={styles.descr}>Nuclear cardiac stress test</Text>
-                            <Image source={require("./assets/check.png")} style={styles.check} />
+                        <View style={[styles.docContainer, { backgroundColor: "#E8F7FA" }]}>
+                            <Text style={styles.titleText}>Tara Tomphson</Text>
+                            <View style={styles.inner}>
+                                <Text style={styles.descr}>Nuclear cardiac stress test</Text>
+                                <Image source={require(
+                                    // @ts-ignore
+                                    "./assets/check.png")} style={styles.check} />
+                            </View>
                         </View>
-                    </View>
-                    <View style={[styles.docContainer, { backgroundColor: "#12D790" }]}>
-                        <Text style={[styles.titleText, { color: "#fff" }]}>Tara Tomphson</Text>
-                        <Text style={[styles.descr, { color: "#fff" }]}>Nuclear cardiac stress test</Text>
-                    </View>
-                    <View style={[styles.docContainer, { backgroundColor: "#12D790" }]}>
-                        <Text style={[styles.titleText, { color: "#fff" }]}>Tara Tomphson</Text>
-                        <Text style={[styles.descr, { color: "#fff" }]}>Nuclear cardiac stress test</Text>
-                    </View>
-                    <View style={[styles.docContainer, { backgroundColor: "#12D790" }]}>
-                        <Text style={[styles.titleText, { color: "#fff" }]}>Tara Tomphson</Text>
-                        <Text style={[styles.descr, { color: "#fff" }]}>Nuclear cardiac stress test</Text>
+                        <View style={[styles.docContainer, { backgroundColor: "#EFF3FC" }]}>
+                            <Text style={styles.titleText}>Tara Tomphson</Text>
+                            <View style={styles.inner}>
+                                <Text style={styles.descr}>Nuclear cardiac stress test</Text>
+                                <Image source={require(
+                                    // @ts-ignore
+                                    "./assets/check.png")} style={styles.check} />
+                            </View>
+                        </View>
+                        <View style={[styles.docContainer, { backgroundColor: "#12D790" }]}>
+                            <Text style={[styles.titleText, { color: "#fff" }]}>Tara Tomphson</Text>
+                            <Text style={[styles.descr, { color: "#fff" }]}>Nuclear cardiac stress test</Text>
+                        </View>
+                        <View style={[styles.docContainer, { backgroundColor: "#12D790" }]}>
+                            <Text style={[styles.titleText, { color: "#fff" }]}>Tara Tomphson</Text>
+                            <Text style={[styles.descr, { color: "#fff" }]}>Nuclear cardiac stress test</Text>
+                        </View>
+                        <View style={[styles.docContainer, { backgroundColor: "#12D790" }]}>
+                            <Text style={[styles.titleText, { color: "#fff" }]}>Tara Tomphson</Text>
+                            <Text style={[styles.descr, { color: "#fff" }]}>Nuclear cardiac stress test</Text>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
             <View style={styles.footer}>
                 <Footer
                     images={[
@@ -163,9 +177,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 10,
         marginTop: 10,
-        marginBottom: 5,
+        marginBottom: 65,
         backgroundColor: "#fff",
-        paddingVertical: 10
+        paddingVertical: 10,
     },
     headingContainer: {
         flexDirection: "row",
@@ -183,7 +197,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         height: 500,
     },
-    docContainer: { backgroundColor: "#FCF0EF", padding: 10, borderRadius: 10, width: 250 },
+    docContainer: { backgroundColor: "#FCF0EF", padding: 10, borderRadius: 10, width: 220 },
     check: {
         height: 19, width: 19, resizeMode: 'contain',
     },
@@ -264,7 +278,16 @@ const footerStyles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingHorizontal: 40
+        paddingHorizontal: 40,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 12,
+        },
+        shadowOpacity: 0.58,
+        shadowRadius: 16.00,
+
+        elevation: 24,
     },
     footerItem: {
         alignItems: "center",

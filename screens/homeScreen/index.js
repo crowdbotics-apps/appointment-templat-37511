@@ -153,7 +153,6 @@ const styles = StyleSheet.create({
     search: { width: 20, height: 15, resizeMode: "contain" },
     footer: {
         position: 'absolute',
-        flex: 0.1,
         left: 0,
         right: 0,
         bottom: 0,
@@ -250,17 +249,20 @@ const footerStyles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingHorizontal: 40
+        paddingHorizontal: 40,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 12,
+        },
+        shadowOpacity: 0.58,
+        shadowRadius: 16.00,
+        elevation: 24,
     },
     footerItem: {
         alignItems: "center",
         justifyContent: "center",
         height: "100%"
-    },
-    footerItemText: {
-        fontSize: 13,
-        color: "#fff",
-        marginTop: 5
     },
     footerImage: {
         width: 20,
@@ -364,8 +366,8 @@ const Course = ({ course }) => {
 const courseStyles = StyleSheet.create({
     container: {
         marginBottom: 10,
-        height: 110,
-        width: 110,
+        height: 90,
+        width: 100,
         backgroundColor: "#FCF1D6",
         borderRadius: 12,
         justifyContent: 'space-between',
