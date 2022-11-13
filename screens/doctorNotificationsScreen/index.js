@@ -88,22 +88,6 @@ const Notifications = ({ navigation }) => {
           }
         </View>
       </ScrollView>
-      <View style={styles.footer}>
-        <Footer
-          images={[
-            // @ts-ignore
-            require("./assets/home.png"),
-            // @ts-ignore
-            require("./assets/calender.png"),
-            // @ts-ignore
-            require("./assets/search.png"),
-            // @ts-ignore
-            require("./assets/user.png")
-          ]}
-          routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'accountScreen']}
-          navigation={navigation}
-        />
-      </View>
     </View>
   );
 };
@@ -178,13 +162,6 @@ const styles = StyleSheet.create({
   title: { fontSize: 16, fontWeight: 'bold', color: "#1E2022" },
   subTitle: { fontSize: 12, fontWeight: 'bold', color: "#1E2022" },
   heading: { fontSize: 15, fontWeight: 'bold', color: "#354259", marginVertical: 5 },
-  footer: {
-    position: 'absolute',
-    flex: 0.1,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
   prevContainer: {
     marginTop: 10,
     paddingBottom: 70
@@ -192,55 +169,3 @@ const styles = StyleSheet.create({
 });
 
 export default Notifications;
-
-
-const Footer = props => {
-
-  return (
-    <View style={[footerStyles.footer]}>
-      {props.images.map((image, index) => (
-        <Pressable style={footerStyles.footerItem} key={index} onPress={() => props.navigation.navigate(props.routes[index])}>
-          <Image
-            style={footerStyles.footerImage}
-            source={image}
-          />
-        </Pressable>
-      ))}
-    </View>
-  );
-};
-
-const footerStyles = StyleSheet.create({
-  footer: {
-    height: 60,
-    backgroundColor: "#FFF",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 40,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 12,
-    },
-    shadowOpacity: 0.58,
-    shadowRadius: 16.00,
-
-    elevation: 24,
-  },
-  footerItem: {
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100%"
-  },
-  footerItemText: {
-    fontSize: 13,
-    color: "#fff",
-    marginTop: 5
-  },
-  footerImage: {
-    width: 20,
-    height: 20,
-    resizeMode: "contain"
-  }
-});

@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Pressable, Image, TextInput, ScrollView } from 
 import React, { useState } from 'react'
 
 const AppointmentDetails = ({ setModalVisible }) => {
+    // @ts-ignore
     const [profile, setProfile] = useState({
         age: "25",
         gender: "Male",
@@ -23,11 +24,15 @@ const AppointmentDetails = ({ setModalVisible }) => {
                 <View style={[styles.mainContainer]}>
                     <View style={[styles.docContainer]}>
                         <Text style={styles.descr}>Nuclear cardiac stress test</Text>
-                        <Text style={styles.titleText}>Tara Tomphson</Text>
+                        <Text style={styles.titleText}>Tara Thompson</Text>
                     </View>
                     <View style={styles.inner}>
-                        <Image source={require("./assets/phone.png")} style={[styles.check, { marginRight: 10 }]} />
-                        <Image source={require("./assets/message.png")} style={styles.check} />
+                        <Image source={require(
+                            // @ts-ignore
+                            "./assets/phone.png")} style={[styles.check, { marginRight: 10 }]} />
+                        <Image source={require(
+                            // @ts-ignore
+                            "./assets/message.png")} style={styles.check} />
                     </View>
                 </View>
                 <Text style={[styles.title, { marginTop: 15 }]}>Date/time</Text>

@@ -1,34 +1,36 @@
 import React, { useEffect, useState } from "react";
 import {
-  // @ts-ignore
   Text, StyleSheet, View, Image, ScrollView, Pressable
 } from "react-native";
 
-const Notifications = ({ navigation }) => {
-  const [notifications, setNotifications] = useState([]);
+const Messages = ({ navigation }) => {
+  const [messages, setMessages] = useState([]);
   useEffect(() => {
-    setNotifications([
+    setMessages([
       {
         id: 1,
-        type: "alarm",
-        title: "Reminder for Alarm",
-        description: "Your Reminder Appointment will be Start After 15 Minutes, Stay with App",
+        title: "Sara Smith",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac integer vulputate ac adipiscing in non vitae.",
         time: "10:00AM",
+        // @ts-ignore
+        image: require("./assets/profile1.png")
 
       },
       {
         id: 2,
-        type: "reminder",
-        title: "Reminder for Appointment",
-        description: "Your Reminder Appointment will be Notification Send.",
+        title: "Esther Howard",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vel, auctor non pellentesque id vestibulum. ",
         time: "11:00AM",
+        // @ts-ignore
+        image: require("./assets/profile2.png")
       },
       {
         id: 3,
-        type: "appointment",
-        title: "Appointment Confirmed",
-        description: "Your Appointment Confirmed. Dr. Sara Smith Call will be Held at 10:30 AM - 24 Dec",
+        title: "Brooklyn Simmons",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat at est in elit cum netus sapien id arcu.",
         time: "12:00PM",
+        // @ts-ignore
+        image: require("./assets/profile3.png")
       }
 
     ])
@@ -44,21 +46,19 @@ const Notifications = ({ navigation }) => {
           style={styles.back}
         />
         <View style={styles.headingContainer}>
-          <Text style={styles.title}>Notifications</Text>
+          <Text style={styles.title}>Patients message</Text>
           <Image source={require(
             // @ts-ignore
-            "./assets/notification.png")} style={styles.notification} />
+            "./assets/message.png")} style={styles.notification} />
         </View>
 
         <Text style={styles.heading}>Today Jun 23:</Text>
         {
-          notifications.map((notification, index) =>
+          messages.map((notification, index) =>
             <View style={styles.listContainer} key={index}>
               <Text style={styles.timeText}>{notification.time}</Text>
               <View style={styles.walletCard}>
-                <Image source={notification.type == 'alarm' ?
-                  // @ts-ignore
-                  require("./assets/alarm.png") : notification.type == 'reminder' ? require("./assets/reminder.png") : require("./assets/appointment.png")} style={styles.image} />
+                <Image source={notification.image} style={styles.image} />
                 <View style={styles.walletCarder}>
                   <Text style={styles.eventName}>{notification.title}</Text>
                   <Text style={styles.eventType}>{notification.description}</Text>
@@ -70,14 +70,12 @@ const Notifications = ({ navigation }) => {
         <View style={styles.prevContainer}>
           <Text style={[styles.heading]}>Yesterday Jun 22:</Text>
           {
-            notifications.map((notification, index) =>
+            messages.map((notification, index) =>
               index < 2 &&
               <View style={[styles.listContainer]} key={index}>
                 <Text style={styles.timeText}>{notification.time}</Text>
                 <View style={styles.walletCard}>
-                  <Image source={notification.type == 'alarm' ? require(
-                    // @ts-ignore
-                    "./assets/alarm.png") : notification.type == 'reminder' ? require("./assets/reminder.png") : require("./assets/appointment.png")} style={styles.image} />
+                  <Image source={notification.image} style={styles.image} />
                   <View style={styles.walletCarder}>
                     <Text style={styles.eventName}>{notification.title}</Text>
                     <Text style={styles.eventType}>{notification.description}</Text>
@@ -88,22 +86,6 @@ const Notifications = ({ navigation }) => {
           }
         </View>
       </ScrollView>
-      <View style={styles.footer}>
-        <Footer
-          images={[
-            // @ts-ignore
-            require("./assets/home.png"),
-            // @ts-ignore
-            require("./assets/calender.png"),
-            // @ts-ignore
-            require("./assets/search.png"),
-            // @ts-ignore
-            require("./assets/user.png")
-          ]}
-          routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'accountScreen']}
-          navigation={navigation}
-        />
-      </View>
     </View>
   );
 };
@@ -178,69 +160,10 @@ const styles = StyleSheet.create({
   title: { fontSize: 16, fontWeight: 'bold', color: "#1E2022" },
   subTitle: { fontSize: 12, fontWeight: 'bold', color: "#1E2022" },
   heading: { fontSize: 15, fontWeight: 'bold', color: "#354259", marginVertical: 5 },
-  footer: {
-    position: 'absolute',
-    flex: 0.1,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
   prevContainer: {
     marginTop: 10,
     paddingBottom: 70
   }
 });
 
-export default Notifications;
-
-
-const Footer = props => {
-
-  return (
-    <View style={[footerStyles.footer]}>
-      {props.images.map((image, index) => (
-        <Pressable style={footerStyles.footerItem} key={index} onPress={() => props.navigation.navigate(props.routes[index])}>
-          <Image
-            style={footerStyles.footerImage}
-            source={image}
-          />
-        </Pressable>
-      ))}
-    </View>
-  );
-};
-
-const footerStyles = StyleSheet.create({
-  footer: {
-    height: 60,
-    backgroundColor: "#FFF",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 40,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 12,
-    },
-    shadowOpacity: 0.58,
-    shadowRadius: 16.00,
-
-    elevation: 24,
-  },
-  footerItem: {
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100%"
-  },
-  footerItemText: {
-    fontSize: 13,
-    color: "#fff",
-    marginTop: 5
-  },
-  footerImage: {
-    width: 20,
-    height: 20,
-    resizeMode: "contain"
-  }
-});
+export default Messages;

@@ -20,10 +20,14 @@
 		"@react-navigation/stack": "^5.14.2",
 		"@reduxjs/toolkit": "^1.5.0",
 		"@screens/appointment": "file:./screens/appointmentScreen",
+		"@screens/appointment-details": "file:./screens/appointmentDetailsScreen",
 		"@screens/choose-category": "file:./screens/categoryScreen",
+		"@screens/doctor-messages": "file:./screens/doctorMessagesScreen",
 		"@screens/doctor-profile": "file:./screens/doctorProfileScreen",
+		"@screens/doctors-notifications": "file:./screens/doctorNotificationsScreen",
 		"@screens/home": "file:./screens/homeScreen",
 		"@screens/my-appointments": "file:./screens/myAppointmentsScreen",
+		"@screens/my-calender": "file:./screens/myCalenderScreen",
 		"@screens/onboarding": "file:./screens/onboardingScreen",
 		"@screens/patient-messages": "file:./screens/patientMessagesScreen",
 		"@screens/patient-notifications": "file:./screens/patientNotificationsScreen",
@@ -77,7 +81,15 @@
 		"preset": "react-native"
 	},
 	"browserslist": {
-		"production": [ ">0.2%", "not dead", "not op_mini all" ],
-		"development": [ "last 1 chrome version", "last 1 firefox version", "last 1 safari version" ]
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
 	}
 }

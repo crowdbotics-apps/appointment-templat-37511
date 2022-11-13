@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#000",
     alignSelf: "flex-end",
-    marginRight: 20,
+    marginRight: 10,
     marginBottom: -5,
     zIndex: 99,
     fontWeight: "bold"
