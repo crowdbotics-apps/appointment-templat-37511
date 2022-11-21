@@ -1,10 +1,8 @@
+from dj_rest_auth.registration.views import RegisterView
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from home.api.v1.viewsets import *
 
-from home.api.v1.viewsets import (
-    SignupViewSet,
-    LoginViewSet,
-)
 
 router = DefaultRouter()
 router.register("signup", SignupViewSet, basename="signup")
