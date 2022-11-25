@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1
     },
-    headerContainer: { paddingHorizontal: 10, backgroundColor: '#fff' },
+    headerContainer: { paddingHorizontal: 0, backgroundColor: '#fff' },
 
     footer: {
         position: 'absolute',
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 25,
+        paddingHorizontal: 15,
         marginVertical: 15
     },
     title: { fontSize: 20, fontWeight: 'bold', color: '#1E2022' },
@@ -181,14 +181,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '27%'
     },
-    date: {
-        fontSize: 12,
-        color: '#1E2022',
-        backgroundColor: '#12D790',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 14
-    },
     subTitle: {
         fontSize: 14,
         color: '#fff',
@@ -209,7 +201,7 @@ const styles = StyleSheet.create({
         color: '#7C7C7C',
         fontWeight: 'bold'
     },
-    descriptionContainer: { paddingHorizontal: 25, paddingTop: 10 },
+    descriptionContainer: { paddingHorizontal: 15, paddingTop: 10 },
     descriptionWrapper: { backgroundColor: '#fff', paddingBottom: 45 },
     descriptionTitle: { fontWeight: 'bold', color: '#000', fontSize: 15 },
     descriptionText: { fontWeight: 'bold', color: '#7C7C7C', fontSize: 15, textAlign: 'justify', marginTop: 2 },

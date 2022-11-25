@@ -79,7 +79,7 @@ const Search = ({ navigation }) => {
                                 onChangeText={handleSearch}
                                 placeholder='Enter'
                                 placeholderTextColor={"#000"}
-                                style={{paddingLeft: 10}}
+                                style={{ paddingLeft: 10 }}
                             />
                         </View>
                         <Image source={require(
@@ -123,7 +123,9 @@ const Search = ({ navigation }) => {
                                 </View>
                             </View>
                             <View style={styles.leftSection}>
-                                <Text style={styles.date}>Book now</Text>
+                                <Pressable>
+                                    <Text style={styles.date}>Book now</Text>
+                                </Pressable>
                             </View>
                         </View>
                     )
@@ -157,7 +159,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    headerContainer: { paddingHorizontal: 10, backgroundColor: "#fff" },
+    headerContainer: { backgroundColor: "#fff" },
 
     footer: {
         position: 'absolute',
@@ -178,7 +180,7 @@ const styles = StyleSheet.create({
     },
     title: { fontSize: 16, fontWeight: 'bold', color: "#1E2022" },
     courseList: { marginBottom: 20 },
-    topsec: { marginHorizontal: 5, marginTop: 20, marginBottom: 5 },
+    topsec: { marginTop: 20, marginBottom: 5 },
     walletCard: {
         backgroundColor: "#fff",
         padding: 15,
@@ -190,7 +192,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         elevation: 15,
         shadowColor: "#ccc9c9",
-        marginHorizontal: 15
+        marginHorizontal: 10
     },
     walletInner: {
         display: "flex",
@@ -249,9 +251,9 @@ const styles = StyleSheet.create({
         width: 15,
         resizeMode: "contain"
     },
-    leftSection: {alignSelf: 'flex-start', marginTop: 7},
-    date: { fontSize: 12, color: "#1E2022", backgroundColor: "#12D790", paddingHorizontal: 10, paddingVertical:5, borderRadius: 14 },
-    subTitle:{fontSize: 12, fontWeight: 'bold', color:"#1E2022"}
+    leftSection: { alignSelf: 'flex-start', marginTop: 7 },
+    date: { fontSize: 12, color: "#1E2022", backgroundColor: "#12D790", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 14, marginLeft: -5 },
+    subTitle: { fontSize: 12, fontWeight: 'bold', color: "#1E2022" }
 })
 
 
@@ -278,17 +280,21 @@ const footerStyles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingHorizontal: 40
+        paddingHorizontal: 40,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 12,
+        },
+        shadowOpacity: 0.58,
+        shadowRadius: 16.00,
+
+        elevation: 24,
     },
     footerItem: {
         alignItems: "center",
         justifyContent: "center",
         height: "100%"
-    },
-    footerItemText: {
-        fontSize: 13,
-        color: "#fff",
-        marginTop: 5
     },
     footerImage: {
         width: 20,
@@ -296,9 +302,6 @@ const footerStyles = StyleSheet.create({
         resizeMode: "contain"
     }
 });
-
-
-
 
 const Course = ({ course }) => {
     return (
@@ -312,8 +315,8 @@ const Course = ({ course }) => {
 const courseStyles = StyleSheet.create({
     container: {
         marginBottom: 10,
-        height: 110,
-        width: 110,
+        height: 100,
+        width: 100,
         backgroundColor: "#FCF1D6",
         borderRadius: 12,
         justifyContent: 'space-between',

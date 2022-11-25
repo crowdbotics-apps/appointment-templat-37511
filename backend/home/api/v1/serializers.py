@@ -9,6 +9,7 @@ from allauth.account.utils import setup_user_email
 from rest_framework import serializers
 from rest_auth.serializers import PasswordResetSerializer
 
+from home.models import *
 
 User = get_user_model()
 
@@ -16,7 +17,7 @@ User = get_user_model()
 class SignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'name', 'email', 'password')
+        fields = ('id', 'user_type', 'name', 'email', 'password')
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -25,6 +26,10 @@ class SignupSerializer(serializers.ModelSerializer):
                 }
             },
             'email': {
+                'required': True,
+                'allow_blank': False,
+            },
+            'user_type': {
                 'required': True,
                 'allow_blank': False,
             }
@@ -46,11 +51,13 @@ class SignupSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User(
+            user_type=validated_data.get('user_type'),
             email=validated_data.get('email'),
             name=validated_data.get('name'),
             username=generate_unique_username([
                 validated_data.get('name'),
                 validated_data.get('email'),
+                validated_data.get('user_type'),
                 'user'
             ])
         )
@@ -60,7 +67,7 @@ class SignupSerializer(serializers.ModelSerializer):
         setup_user_email(request, user, [])
         return user
 
-    def save(self, request=None):
+    def save(self):
         """rest_auth passes request so we must override to accept it"""
         return super().save()
 
@@ -68,9 +75,110 @@ class SignupSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'name']
+        fields = ['id', 'email', 'name', 'user_type']
 
 
 class PasswordSerializer(PasswordResetSerializer):
     """Custom serializer for rest_auth to solve reset password error"""
     password_reset_form_class = ResetPasswordForm
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    service_location = serializers.CharField(source='location_service_provide', read_only=True)
+
+    class Meta:
+        model = Location
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return super(LocationSerializer, self).create(validated_data)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    client_detail = serializers.CharField(source='from_client', read_only=True)
+    service_provider_detail = serializers.CharField(source='to_service_provider', read_only=True)
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return super(ReviewSerializer, self).create(validated_data)
+
+
+class ServiceProviderSerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source='category.title', read_only=True)
+    reviews = serializers.CharField(source='to_service_provider', read_only=True)
+
+    class Meta:
+        model = ServiceProvider
+        fields = '__all__'
+        extra_kwargs = {'image': {'required': False}, 'user': {'required': False}}
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        validated_data.update({'user': request.user})
+        return super(ServiceProviderSerializer, self).create(validated_data)
+
+
+class ClientSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Clients
+        fields = '__all__'
+        extra_kwargs = {'image': {'required': False}, 'user': {'required': False}}
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        validated_data.update({'user': request.user})
+        return super(ClientSerializer, self).create(validated_data)
+
+
+class MeetingInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MeetingInformation
+        fields = '__all__'
+
+
+class AppointmentSerializer(serializers.ModelSerializer):
+    client_detail = ClientSerializer(source='client', read_only=True)
+    servicer_detail = ServiceProviderSerializer(source='service_provider', read_only=True)
+
+    class Meta:
+        model = Appointment
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep["appointment_type"] = MeetingInfoSerializer(instance.appointment_type.all(), many=True).data
+        return rep
+
+    def validate(self, data):
+        if not self.instance:
+            if Appointment.objects.filter(
+                                          start_time__lt=data['end_time'],
+                                          end_time__gt=data['start_time']).exists():
+                raise serializers.ValidationError(f'This appointment slot is already booked for {data["service_provider"]}.')
+            return data
+
+    def create(self, request):
+        data = request.data
+        serializer = AppointmentSerializer(data=data)
+        if serializer.is_valid():
+            sp = ServiceProvider.objects.get(id=data['service_provider'])
+            data['appointment_cost'] = sp.appointment_fee
+            mt = MeetingInformation.objects.filter(id__in=data['appointment_type']).aggregate(fees=Sum('fees'))
+            data['additional_fee'] = mt.get('fees', 0)
+            data['total'] = mt.get('fees', 0) + sp.appointment_fee
+            serializer.save()
+            return serializer.data
+        return serializer.errors
+
+

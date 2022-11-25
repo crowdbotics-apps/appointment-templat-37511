@@ -50,7 +50,7 @@ except (DefaultCredentialsError, PermissionDenied):
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str("SECRET_KEY")
+SECRET_KEY = env.str("SECRET_KEY", "11223344")
 
 ALLOWED_HOSTS = env.list("HOST", default=["*"])
 SITE_ID = 1
@@ -210,6 +210,11 @@ REST_AUTH_REGISTER_SERIALIZERS = {
     "REGISTER_SERIALIZER": "home.api.v1.serializers.SignupSerializer",
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 # Custom user model
 AUTH_USER_MODEL = "users.User"
 
@@ -273,3 +278,5 @@ if GS_BUCKET_NAME:
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     GS_DEFAULT_ACL = "publicRead"
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
