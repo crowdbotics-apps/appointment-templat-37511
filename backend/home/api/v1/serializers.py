@@ -1,5 +1,5 @@
-from django.contrib.auth import get_user_model, authenticate
-from django.http import HttpRequest, HttpResponse
+from django.contrib.auth import get_user_model
+from django.http import HttpRequest
 from django.utils.translation import ugettext_lazy as _
 from allauth.account import app_settings as allauth_settings
 from allauth.account.forms import ResetPasswordForm
@@ -84,40 +84,43 @@ class PasswordSerializer(PasswordResetSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    profession_name = serializers.CharField(source='profession.profession_category', read_only=True)
 
     class Meta:
         model = Category
-        fields = ['profession_name', 'title', 'description']
-        xtra_kwargs = {'image': {'required': False}}
-
-
-class AppointmentSerializer(serializers.ModelSerializer):
-    client_detail = serializers.CharField(source='clients', read_only=True)
-    servicer_detail = serializers.CharField(source='service_provider', read_only=True)
-
-    class Meta:
-        model = Appointment
         fields = '__all__'
 
-    def validate(self, data):
-        if not self.instance:
-            if Appointment.objects.filter(
-                                          start_time=data['start_time'],
-                                          end_time=data['end_time']).exists():
-                raise serializers.ValidationError(f'Appointment Already Booked for {data["service_provider"]}')
-            return data
+
+class LocationSerializer(serializers.ModelSerializer):
+    service_location = serializers.CharField(source='location_service_provide', read_only=True)
+
+    class Meta:
+        model = Location
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return super(LocationSerializer, self).create(validated_data)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    client_detail = serializers.CharField(source='from_client', read_only=True)
+    service_provider_detail = serializers.CharField(source='to_service_provider', read_only=True)
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return super(ReviewSerializer, self).create(validated_data)
 
 
 class ServiceProviderSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.title', read_only=True)
-    client = AppointmentSerializer(many=True, read_only=True)
     reviews = serializers.CharField(source='to_service_provider', read_only=True)
 
     class Meta:
         model = ServiceProvider
-        fields = ['name', 'uuid', 'gender', 'speciality', 'biography', 'experience', 'opening_time', 'closing_time', 'available_days',  'image', 'category', 'category_name', 'client', 'reviews', 'appointment_cost']
-        extra_kwargs = {'image': {'required': False}}
+        fields = '__all__'
+        extra_kwargs = {'image': {'required': False}, 'user': {'required': False}}
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -125,8 +128,7 @@ class ServiceProviderSerializer(serializers.ModelSerializer):
         return super(ServiceProviderSerializer, self).create(validated_data)
 
 
-class ClientPatientSerializer(serializers.ModelSerializer):
-    service_provider = AppointmentSerializer(many=True, read_only=True)
+class ClientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Clients
@@ -136,19 +138,7 @@ class ClientPatientSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request')
         validated_data.update({'user': request.user})
-        return super(ClientPatientSerializer, self).create(validated_data)
-
-
-class ReviewSerializer(serializers.ModelSerializer):
-    client_detail = serializers.CharField(source='from_client', read_only=True)
-    service_provider_detail = serializers.CharField(source='to_service_provider', read_only=True)
-
-    class Meta:
-        model = Review
-        fields = ['to_service_provider', 'from_client', 'comment', 'rating', 'client_detail', 'service_provider_detail']
-
-    def create(self, validated_data):
-        return super(ReviewSerializer, self).create(validated_data)
+        return super(ClientSerializer, self).create(validated_data)
 
 
 class MeetingInfoSerializer(serializers.ModelSerializer):
@@ -156,16 +146,39 @@ class MeetingInfoSerializer(serializers.ModelSerializer):
         model = MeetingInformation
         fields = '__all__'
 
-    def create(self, validated_data):
-        request = self.context.get('request')
-        validated_data.update({'user': request.user})
-        return super(MeetingInfoSerializer, self).create(validated_data)
 
-
-class LocationSerializer(serializers.ModelSerializer):
-    service_location = serializers.CharField(source='location_service_provide', read_only=True)
+class AppointmentSerializer(serializers.ModelSerializer):
+    client_detail = ClientSerializer(source='client', read_only=True)
+    servicer_detail = ServiceProviderSerializer(source='service_provider', read_only=True)
 
     class Meta:
-        model = Location
+        model = Appointment
         fields = '__all__'
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep["appointment_type"] = MeetingInfoSerializer(instance.appointment_type.all(), many=True).data
+        return rep
+
+    def validate(self, data):
+        if not self.instance:
+            if Appointment.objects.filter(
+                                          start_time__lt=data['end_time'],
+                                          end_time__gt=data['start_time']).exists():
+                raise serializers.ValidationError(f'This appointment slot is already booked for {data["service_provider"]}.')
+            return data
+
+    def create(self, request):
+        data = request.data
+        serializer = AppointmentSerializer(data=data)
+        if serializer.is_valid():
+            sp = ServiceProvider.objects.get(id=data['service_provider'])
+            data['appointment_cost'] = sp.appointment_fee
+            mt = MeetingInformation.objects.filter(id__in=data['appointment_type']).aggregate(fees=Sum('fees'))
+            data['additional_fee'] = mt.get('fees', 0)
+            data['total'] = mt.get('fees', 0) + sp.appointment_fee
+            serializer.save()
+            return serializer.data
+        return serializer.errors
+
 
