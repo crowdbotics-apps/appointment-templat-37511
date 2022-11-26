@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { useState } from "react"
 import {
   View,
@@ -148,6 +147,7 @@ import { setItem } from "../../../store"
 export const SignIn = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [apiError, setApiError] = useState([])
   const [isCheck, setIsCheck] = useState(false);
   const [secureTextEntryPassword, setSecureTextEntryPassword] = useState(true);
 
@@ -157,13 +157,12 @@ export const SignIn = ({ navigation }) => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-
   // @ts-ignore
   const { api } = useSelector(state => state.Login);
   const dispatch = useDispatch();
 
   const onSigninPress = async () => {
-
+    setApiError([])
     if (!validateEmail.test(email)) {
       return setValidationError({
         email: "Please enter a valid email address.",
@@ -186,13 +185,20 @@ export const SignIn = ({ navigation }) => {
         if (res.token) {
           await setItem('token', res.token)
           await setItem('user', JSON.stringify(res?.user))
+          if (res.user.user_type == 'client') {
+            navigation.navigate("categoryScreen");
+          } else {
+            navigation.navigate("doctorProfileScreen");
+          }
           setEmail("");
           setPassword("")
-          navigation.navigate(HOME_SCREEN_NAME);
           setIsLoading(false)
         }
       })
-      .catch(err => { setIsLoading(false); console.log(err.message) });
+      .catch(err => {
+        setIsLoading(false);
+        setApiError(apiError => [...apiError, err]);
+      });
   };
 
 
@@ -242,7 +248,13 @@ export const SignIn = ({ navigation }) => {
           }
           errorText={validationError.password}
         />
-
+        {
+          apiError.map((value, index) =>
+            <View key={index}>
+              <Text style={styles.error1}>{value[Object.keys(value)[index]].toString()}</Text>
+            </View>
+          )
+        }
         <View style={styles.flexRow}>
           <Checkbox
             value={isCheck}
@@ -281,15 +293,17 @@ export const SignIn = ({ navigation }) => {
   );
 };
 
-
+import { RadioButton } from 'react-native-paper';
 export const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [apiError, setApiError] = useState([])
   const [isCheck, setIsCheck] = useState(false);
   const [secureTextEntryPassword, setSecureTextEntryPassword] = useState(true);
   const [secureTextEntryConfirmPassword, setSecureTextEntryConfirmPassword] =
     useState(true);
+  const [userType, setUserType] = useState('client');
 
   const [validationError, setValidationError] = useState({
     email: "",
@@ -303,11 +317,16 @@ export const SignUp = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const onSignupPress = async () => {
-    setValidationError({ email: "", password: "" });
+    setApiError([])
     if (!validateEmail.test(email)) {
       return setValidationError({
         email: "Please enter a valid email address.",
         password: ""
+      });
+    } else {
+      setValidationError({
+        ...validationError,
+        email: "",
       });
     }
 
@@ -326,8 +345,7 @@ export const SignUp = ({ navigation }) => {
     }
     setIsLoading(true)
     // @ts-ignore
-    dispatch(signupRequest({ email, password }))
-      // @ts-ignore
+    dispatch(signupRequest({ email, password, user_type: userType }))
       .then(unwrapResult)
       .then(async (res) => {
         // await setItem('token', res.token)
@@ -336,15 +354,9 @@ export const SignUp = ({ navigation }) => {
         setPassword("");
         setConfirmPassword("");
         setIsLoading(false)
-        Alert.alert(
-          "Signup Success",
-          "Registration Successful. A confirmation will be sent to your e-mail address.",
-          [
-            { text: "OK", onPress: () => navigation.navigate("LoginScreen") }
-          ]
-        )
+        navigation.navigate("LoginScreen")
       })
-      .catch(err => { console.log(err.message); setIsLoading(false) });
+      .catch(err => { setApiError(apiError => [...apiError, err]);; setIsLoading(false) });
   };
 
   const resetValidations = () => {
@@ -369,6 +381,7 @@ export const SignUp = ({ navigation }) => {
     resetValidations()
   }
 
+
   return (
     <View style={styles.container}>
       {isLoading && <Loader></Loader>}
@@ -382,7 +395,7 @@ export const SignUp = ({ navigation }) => {
           text="Email address"
           placeholder="Enter your email address"
           value={email}
-          onChange={handleInputEmail}
+          onChange={(value) => handleInputEmail(value)}
           containerStyle={styles.inputContainer}
           errorText={validationError.email}
         />
@@ -390,7 +403,7 @@ export const SignUp = ({ navigation }) => {
           text="Password"
           placeholder="Enter your password"
           value={password}
-          onChange={handleInputPassword}
+          onChange={(value) => handleInputPassword(value)}
           containerStyle={styles.inputContainer}
           secureTextEntry={secureTextEntryPassword}
           icon={require("../assets/eyeIcon.png")}
@@ -403,7 +416,7 @@ export const SignUp = ({ navigation }) => {
           text="Confirm password"
           placeholder="Enter your password again"
           value={confirmPassword}
-          onChange={handleInputConfirmPassword}
+          onChange={(value) => handleInputConfirmPassword(value)}
           containerStyle={styles.inputContainer}
           secureTextEntry={secureTextEntryConfirmPassword}
           icon={require("../assets/eyeIcon.png")}
@@ -412,6 +425,26 @@ export const SignUp = ({ navigation }) => {
           }
 
         />
+        {
+          apiError.map((value, index) =>
+            <View key={index}>
+              <Text style={styles.error1}>{value[Object.keys(value)[index]].toString()}</Text>
+            </View>
+          )
+        }
+        <RadioButton.Group onValueChange={newValue => setUserType(newValue)} value={userType}>
+          <View style={styles.radioContainer}>
+          <View style={styles.radioSection}>
+            <RadioButton value="professional" color="#000"/>
+            <Text>Service Provider</Text>
+          </View>
+          <View style={[styles.radioSection, {marginLeft: 20}]}>
+            <RadioButton value="client" color="#000"/>
+            <Text>Client</Text>
+          </View>
+          </View>
+        </RadioButton.Group>
+
         <View style={styles.flexRow}>
           <Checkbox
             value={isCheck}
@@ -526,6 +559,22 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: "bold",
     color: "#000"
+  },
+  error1: {
+    color: '#f77474',
+    fontStyle: 'italic',
+    fontSize: 14,
+    paddingHorizontal: 10,
+  },
+  radioSection:{
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",    
+  },
+  radioContainer:{
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center", 
   }
 });
 
@@ -547,7 +596,7 @@ const Input = props => {
         ]}
         placeholder={props.placeholder ? props.placeholder : "Enter"}
         value={props.value}
-        onChangeText={() => props.onChange()}
+        onChangeText={(value) => props.onChange(value)}
         placeholderTextColor={
           props.placeholderTextColor ? props.placeholderTextColor : "#9B9B9B"
         }
@@ -617,7 +666,7 @@ const inputStyles = StyleSheet.create({
     height: 150
   },
   children: {},
-  error:{color: "#f77474"}
+  error: { color: "#f77474" }
 });
 
 const Checkbox = props => {
