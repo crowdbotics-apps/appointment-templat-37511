@@ -4,17 +4,26 @@ import { api } from "./api"
 
 export const loginRequest = createAsyncThunk(
   "login/loginRequest",
-  async payload => {
-    const response = await api.apiLoginRequest(payload);
-    return response.data;
+  async (payload, {rejectWithValue}) => {
+    try {
+      const response = await api.apiLoginRequest(payload);
+      return response.data;
+     } catch (error) {
+      return rejectWithValue(error.response.data)
+     }
+   
   }
 );
 
 export const signupRequest = createAsyncThunk(
   "login/signupRequest",
-  async payload => {
-    const response = await api.apiSignupRequest(payload);
-    return response.data;
+  async (payload, {rejectWithValue}) => {
+    try {
+      const response = await api.apiSignupRequest(payload);
+      return response.data;
+     } catch (error) {
+      return rejectWithValue(error.response.data)
+     }
   }
 );
 

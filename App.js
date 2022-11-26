@@ -8,7 +8,7 @@ import {
   createReducer,
   combineReducers
 } from "@reduxjs/toolkit"
-
+import appointmentReducer from './store';
 import { screens } from "@screens"
 import { modules, reducers, hooks, initialRoute } from "@modules"
 import { connectors } from "@store"
@@ -55,6 +55,7 @@ const getStore = (globalState) => {
   })
 
   const reducer = combineReducers({
+	appointment: appointmentReducer,
     app: appReducer,
     ...reducers,
     ...connectors

@@ -1,66 +1,45 @@
-// @ts-nocheck
 import { View, StyleSheet, Image, ImageBackground, TouchableOpacity, Pressable, FlatList, Text } from 'react-native'
 import React, { useEffect, useState } from 'react'
-
-
+import { unwrapResult } from '@reduxjs/toolkit'
+import { useDispatch, useSelector } from 'react-redux';
+import { getCategoriesList } from '../../store';
 const ChooseCategory = ({ navigation }) => {
-    const [productsList, setProductsList] = useState([]);
+    const dispatch = useDispatch();
+    const [categories, setCategories] = useState([]);
+    const { api } = useSelector(state => state?.appointment);
+    const categoryImages = [
+        require("./assets/heart.png"),
+        require("./assets/eye.png"),
+        require("./assets/germs.png"),
+        require("./assets/lungs.png"),
+        require("./assets/stomach.png"),
+        require("./assets/muscles.png"),
+        require("./assets/teeth.png"),
+        require("./assets/bone.png"),
+    ]
+
     useEffect(() => {
-        setProductsList([
-            {
-                id: 1,
-                name: "Cardiologist",
-                image: require("./assets/heart.png"),
-                selected: true
-            },
-            {
-                id: 2,
-                name: "Ophthalmologist",
-                image: require("./assets/eye.png")
-            },
-            {
-                id: 3,
-                name: "Virologist",
-                image: require("./assets/germs.png")
-            },
-            {
-                id: 4,
-                name: "Pulmonologist",
-                image: require("./assets/lungs.png"),
-                selected: true
-            },
-            {
-                id: 5,
-                name: "Gastroenterologist",
-                image: require("./assets/stomach.png"),
-                selected: true
-            },
-            {
-                id: 6,
-                name: "Rheumatologist",
-                image: require("./assets/muscles.png")
-            },
-            {
-                id: 7,
-                name: "Stomatologist",
-                image: require("./assets/teeth.png")
-            },
-            {
-                id: 8,
-                name: "Orthopedic",
-                image: require("./assets/bone.png"),
-                selected: true
-            },
-        ]);
-    }, []);
+        dispatch(getCategoriesList())
+            .then(unwrapResult).then((res) => {
+                setCategories(res)
+            }).catch((error) => { console.log("Error: ", error) })
+    }, [])
+
+    useEffect(() => {
+    setTimeout(() => {
+        navigation.navigate('homeScreen')
+    }, 3000);
+    }, [])
+    
     return (
         <View style={styles.container}>
 
             <Text style={styles.heading}>Choose your category</Text>
+            {api.loading == 'pending' && <Loader />}
             <FlatList
                 style={styles.courseList}
-                data={productsList}
-                renderItem={({ item }) => <Course course={item} />}
+                data={categories}
+                renderItem={({ item, index }) => <Category category={item} index= {index} categoryImages={categoryImages}/>}
                 numColumns={2}
                 keyExtractor={item => item.id.toString()}
                 columnWrapperStyle={styles.columnWrapper}
@@ -88,11 +67,11 @@ const styles = StyleSheet.create({
 })
 
 
-const Course = ({ course }) => {
+const Category = ({ category, index, categoryImages }) => {
     return (
         <View style={courseStyles.container}>
-            <Image source={course.image} style={courseStyles.image} />
-            <Text style={[courseStyles.text, { color: course.selected ? "#23AAFA" : "#000" }]}>{course.name}</Text>
+            <Image source={categoryImages[index]} style={courseStyles.image} />
+            <Text style={[courseStyles.text, { color: "#000" }]}>{category.title}</Text>
         </View>
     );
 };
@@ -111,4 +90,37 @@ const courseStyles = StyleSheet.create({
     image: { height: 48, width: 38, resizeMode: 'contain' },
     text: { color: "#989DA0", textAlign: 'center' }
 
+});
+
+
+import { ActivityIndicator } from "react-native";
+
+const Loader = () => {
+  return (
+    <View style={loaderStyles.container}>
+      <View style={loaderStyles.loaderContainer}>
+        <ActivityIndicator color="#000" />
+      </View>
+    </View>
+  );
+};
+const loaderStyles = StyleSheet.create({
+  container: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999
+  },
+  loaderContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+    shadowColor: "#000",
+    elevation: 3
+  }
 });
