@@ -1,52 +1,31 @@
-// @ts-nocheck
 import { View, Text, StyleSheet, Image, Pressable, Dimensions, FlatList, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
+import { getServiceProviderList } from '../../store';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Home = ({ navigation }) => {
     const [screenWidth, setScreenWidth] = useState(null)
-    const [productsList, setProductsList] = useState([]);
-    const data = [
-        {
-            id: 1,
-            title: "Dr. Sara Thomson",
-            rating: 4.7,
-            specialty: "Cardiology",
-            designation: "Doctor",
-            image: "https://raw.githubusercontent.com/crowdbotics/modules/master/modules/screen-explore-list/assets/eventImage-lg.png"
-        },
-        {
-            id: 2,
-            title: "Dr. Eric Snow",
-            rating: 4.6,
-            specialty: "Pulmonolgy",
-            designation: "Doctor",
-            image: "https://raw.githubusercontent.com/crowdbotics/modules/master/modules/screen-explore-list/assets/eventImage-lg.png"
-        },
+    const [serviceProviders, setServiceProviders] = useState([]);
+    const dispatch = useDispatch();
+    const { api, categories } = useSelector(state => state?.appointment);
+   
+    const categoryImages = [
+        require("./assets/lungs.png"),
+        require("./assets/heart.png"),
+        require("./assets/bone.png"),
     ]
-    useEffect(() => {
-        setProductsList([
-            {
-                id: 1,
-                name: "Cardiologist",
-                image: require("./assets/heart.png"),
-                selected: true
-            },
-            {
-                id: 2,
-                name: "Pulmonologist ",
-                image: require("./assets/lungs.png")
-            },
-            {
-                id: 3,
-                name: "Orthopedic",
-                image: require("./assets/bone.png")
-            },
-        ]);
-    }, []);
 
     useEffect(() => {
         const windowWidth = Dimensions.get('window').width;
         setScreenWidth(windowWidth);
+    }, [])
+
+    useEffect(() => {
+        dispatch(getServiceProviderList())
+            .then(unwrapResult).then((res) => {
+                setServiceProviders(res);
+            }).catch((error) => { console.log("Error: 1", error) })
     }, [])
 
     return (
@@ -66,7 +45,7 @@ const Home = ({ navigation }) => {
                     />
                 </View>
                 <FlatList
-                    data={data}
+                    data={serviceProviders}
                     renderItem={({ item }) => <ExploreItem event={item} width={screenWidth} navigation={navigation} />}
                     keyExtractor={item => item.id.toString()}
                     horizontal={true}
@@ -79,8 +58,8 @@ const Home = ({ navigation }) => {
                 </View>
                 <FlatList
                     style={styles.courseList}
-                    data={productsList}
-                    renderItem={({ item }) => <Course course={item} />}
+                    data={categories}
+                    renderItem={({ item, index }) => <Category category={item} index={index} categoryImages={categoryImages}/>}
                     numColumns={3}
                     keyExtractor={item => item.id.toString()}
                     columnWrapperStyle={styles.columnWrapper}
@@ -92,22 +71,22 @@ const Home = ({ navigation }) => {
             </View>
             <ScrollView style={{ marginBottom: 65 }}>
                 {
-                    data.map((doc, index) =>
-                        <View style={styles.walletCard} key={index}>
+                    serviceProviders.map((item, index) =>
+                        <Pressable style={styles.walletCard} key={index} onPress={() =>navigation.navigate('doctorProfileScreen', {item})}>
                             <View style={styles.walletInner}>
                                 <View style={styles.imgContainer}>
-                                    <Image source={{ uri: "etrwet" }} style={styles.image} />
+                                    <Image source={{ uri:  item.image}} style={styles.image} />
                                 </View>
                                 <View style={styles.walletCarder}>
-                                    <Text style={styles.eventName}>{doc.title}</Text>
-                                    <Text style={styles.eventType}>{doc.specialty} </Text>
+                                    <Text style={styles.eventName}>{item.name}</Text>
+                                    <Text style={styles.eventType}>{item.category_name} </Text>
                                     <View style={styles.ratingContainer}>
                                         <Image source={require("./assets/rating.png")} style={styles.image} />
-                                        <Text style={styles.attending}>(16 reviews)</Text>
+                                        <Text style={styles.attending}>({item?.reviews?.length} reviews)</Text>
                                     </View>
                                 </View>
                             </View>
-                        </View>
+                        </Pressable>
                     )
                 }
             </ScrollView>
@@ -273,20 +252,20 @@ const footerStyles = StyleSheet.create({
 
 
 const ExploreItem = ({ event, width, navigation }) => {
+    console.log("event: ", event)
     return (
         <View style={[exploreItemStyles.container, { width: width - 120 }]}>
             <Pressable onPress={() => { navigation.navigate('searchScreen') }}>
                 <View style={exploreItemStyles.header}>
                     <View style={exploreItemStyles.heading}>
-                        <Text style={exploreItemStyles.headingText}>{event.title}</Text>
-                        <Text style={exploreItemStyles.text}>{event.specialty}</Text>
-                        <Text style={exploreItemStyles.text}>{event.designation}</Text>
+                        <Text style={exploreItemStyles.headingText}>{event.name}</Text>
+                        <Text style={exploreItemStyles.text}>{event.category_name}</Text>
                     </View>
                 </View>
             </Pressable>
             <View style={exploreItemStyles.detailsContainer}>
                 <Image source={require("./assets/star.png")} style={exploreItemStyles.star} />
-                <Text style={{ color: "#979797" }}>{event.rating}</Text>
+                <Text style={{ color: "#979797" }}>{event?.reviews.length > 0 ? event?.reviews[0]?.rating:''}</Text>
             </View>
         </View>
     );
@@ -354,14 +333,12 @@ const exploreItemStyles = StyleSheet.create({
 });
 
 
-const Course = ({ course }) => {
-    return (
-        <View style={courseStyles.container}>
-            <Image source={course.image} style={courseStyles.image} />
-            <Text style={[courseStyles.text]}>{course.name}</Text>
-        </View>
-    );
-};
+const Category = ({ category, index, categoryImages }) => 
+       index<3 &&
+            <View style={courseStyles.container}>
+                <Image source={categoryImages[index]} style={courseStyles.image} />
+                <Text style={[courseStyles.text]}>{category.title}</Text>
+            </View>
 
 const courseStyles = StyleSheet.create({
     container: {

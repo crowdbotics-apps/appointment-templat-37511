@@ -1,70 +1,23 @@
 import { View, Text, StyleSheet, Image, Pressable, Dimensions, FlatList, ScrollView, TextInput } from 'react-native'
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux';
 
 const Search = ({ navigation }) => {
-    const [screenWidth, setScreenWidth] = useState(null)
-    const [productsList, setProductsList] = useState([]);
-    const data = [
-        {
-            id: 1,
-            title: "Dr. Sara Thomson",
-            rating: 4.7,
-            specialty: "Cardiology",
-            designation: "Doctor",
-            image: "https://raw.githubusercontent.com/crowdbotics/modules/master/modules/screen-explore-list/assets/eventImage-lg.png"
-        },
-        {
-            id: 2,
-            title: "Dr. Eric Snow",
-            rating: 4.6,
-            specialty: "Pulmonolgy",
-            designation: "Doctor",
-            image: "https://raw.githubusercontent.com/crowdbotics/modules/master/modules/screen-explore-list/assets/eventImage-lg.png"
-        },
-        {
-            id: 3,
-            title: "Dr. Eric Snow",
-            rating: 4.6,
-            specialty: "Pulmonolgy",
-            designation: "Doctor",
-            image: "https://raw.githubusercontent.com/crowdbotics/modules/master/modules/screen-explore-list/assets/eventImage-lg.png"
-        },
-        {
-            id: 4,
-            title: "Dr. Eric Snow",
-            rating: 4.6,
-            specialty: "Pulmonolgy",
-            designation: "Doctor",
-            image: "https://raw.githubusercontent.com/crowdbotics/modules/master/modules/screen-explore-list/assets/eventImage-lg.png"
-        },
-    ]
+    const [providersList, setProvidersList] = useState([]);
+    const { api, categories, service_providers } = useSelector(state => state?.appointment);
+
     useEffect(() => {
-        setProductsList([
-            {
-                id: 1,
-                name: "Cardiologist",
-                image: require("./assets/heart.png"),
-                selected: true
-            },
-            {
-                id: 2,
-                name: "Pulmonologist ",
-                image: require("./assets/lungs.png")
-            },
-            {
-                id: 3,
-                name: "Orthopedic",
-                image: require("./assets/bone.png")
-            },
-        ]);
-    }, []);
-    const handleSearch = (value) => {
-        console.log("Entered Value", value)
-    }
-    useEffect(() => {
-        const windowWidth = Dimensions.get('window').width;
-        setScreenWidth(windowWidth);
-    }, [])
+        setProvidersList(service_providers);
+      }, [])
+
+    const handleSearchStore = async (text) => {
+        if (!text) {
+          setProvidersList(service_providers)
+        } else {
+          const searchedVenders = service_providers.filter(element => element.name.toLowerCase().includes(text.toLowerCase()));
+          setProvidersList(searchedVenders);
+        }
+      }
 
     return (
         <View style={styles.container}>
@@ -76,7 +29,7 @@ const Search = ({ navigation }) => {
                         <View style={{ flex: 1 }}>
                             <TextInput
                                 // value={searchText}
-                                onChangeText={handleSearch}
+                                onChangeText={(text) => handleSearchStore(text)}
                                 placeholder='Enter'
                                 placeholderTextColor={"#000"}
                                 style={{ paddingLeft: 10 }}
@@ -94,31 +47,31 @@ const Search = ({ navigation }) => {
                 </View>
                 <FlatList
                     style={styles.courseList}
-                    data={productsList}
-                    renderItem={({ item }) => <Course course={item} />}
+                    data={categories}
+                    renderItem={({ item, index }) => <Category category={item} index={index}/>}
                     numColumns={3}
                     keyExtractor={item => item.id.toString()}
                     columnWrapperStyle={styles.columnWrapper}
                 />
             </View>
             <View style={[styles.headingContainer, styles.topsec]}>
-                <Text style={styles.title}>4 Doctors Found</Text>
+                <Text style={styles.title}>{service_providers.length} Doctors Found</Text>
                 <Text></Text>
             </View>
             <ScrollView style={{ marginBottom: 65 }}>
                 {
-                    data.map((doc, index) =>
-                        <View style={styles.walletCard} key={index}>
+                    providersList.map((item, index) =>
+                        <Pressable style={styles.walletCard} key={index} onPress={() =>navigation.navigate('doctorProfileScreen', {item})}>
                             <View style={styles.walletInner}>
                                 <View style={styles.imgContainer}>
-                                    <Image source={{ uri: "etrwet" }} style={styles.image} />
+                                    <Image source={{ uri: item?.image }} style={styles.image} />
                                 </View>
                                 <View style={styles.walletCarder}>
-                                    <Text style={styles.eventName}>{doc.title}</Text>
-                                    <Text style={styles.eventType}>{doc.specialty} </Text>
+                                    <Text style={styles.eventName}>{item?.name}</Text>
+                                    <Text style={styles.eventType}>{item?.category_name} </Text>
                                     <View style={styles.ratingContainer}>
                                         <Image source={require("./assets/rating.png")} style={styles.image} />
-                                        <Text style={styles.attending}>(16 reviews)</Text>
+                                        <Text style={styles.attending}>({item?.reviews.length} reviews)</Text>
                                     </View>
                                 </View>
                             </View>
@@ -127,7 +80,7 @@ const Search = ({ navigation }) => {
                                     <Text style={styles.date}>Book now</Text>
                                 </Pressable>
                             </View>
-                        </View>
+                        </Pressable>
                     )
                 }
             </ScrollView>
@@ -303,14 +256,13 @@ const footerStyles = StyleSheet.create({
     }
 });
 
-const Course = ({ course }) => {
-    return (
-        <View style={courseStyles.container}>
-            <Image source={course.image} style={courseStyles.image} />
-            <Text style={[courseStyles.text]}>{course.name}</Text>
-        </View>
-    );
-};
+const Category = ({ category, index }) => (
+    index < 3 &&
+    <View style={courseStyles.container}>
+        <Image source={{ uri: category.image }} style={courseStyles.image} />
+        <Text style={[courseStyles.text]}>{category.title}</Text>
+    </View>
+)
 
 const courseStyles = StyleSheet.create({
     container: {
