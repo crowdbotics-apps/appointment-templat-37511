@@ -1,9 +1,14 @@
 import { View, Text, StyleSheet, Image, ScrollView, TextInput, Pressable } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Switch } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { getMeetingInfo } from '../../store';
 
 
 const Appointment = ({ navigation }) => {
+    const dispatch = useDispatch();
+    const [meetingInfo, setMeetingInfo] = useState([]);
     const [isEnabled, setIsEnabled] = useState(true);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const [isEnabled1, setIsEnabled1] = useState(false);
@@ -11,29 +16,19 @@ const Appointment = ({ navigation }) => {
     const [isEnabled2, setIsEnabled2] = useState(false);
     const toggleSwitch2 = () => setIsEnabled2(previousState => !previousState);
     // @ts-ignore
-    const fees = [
-        {
-            id: 1,
-            title: 'Voice Call',
-            description: 'Can Make a Voice Call with Doctor',
-            charge: 10,
-            image: require("./assets/phone.png")
-        },
-        {
-            id: 2,
-            title: 'Messaging',
-            description: 'Can Messaging with Doctor',
-            charge: 6,
-            image: require("./assets/message.png")
-        },
-        {
-            id: 3,
-            title: 'Video Call',
-            description: 'Can Make a Video Call with Doctor',
-            charge: 16,
-            image: require("./assets/video.png")
-        }
-    ];
+    const meetingTitle = ['Voice Call', 'Messaging', 'Video Call' ];
+
+    const meetingIcons = [
+        require("./assets/phone.png"),
+        require("./assets/message.png"),
+        require("./assets/video.png"),
+    ]
+    useEffect(() => {
+        dispatch(getMeetingInfo())
+            .then(unwrapResult).then((res) => {
+                setMeetingInfo(res)
+            }).catch((error) => { console.log("Error: ", error) })
+    }, [])
 
     return (
         <View style={styles.container}>
@@ -135,19 +130,19 @@ const Appointment = ({ navigation }) => {
                         Fees Information:
                     </Text>
                     {
-                        fees.map((fee, index) =>
+                        meetingInfo.map((fee, index) =>
                             <View style={styles.walletCard} key={index}>
                                 <View style={styles.walletInner}>
                                     <View style={styles.imgContainer}>
-                                        <Image source={fee.image} style={styles.image} />
+                                        <Image source={fee?.meeting_type == 'video' ? meetingIcons[2] : fee?.meeting_type == 'voice' ? meetingIcons[0] : meetingIcons[1]} style={styles.image} />
                                     </View>
                                     <View style={styles.walletCarder}>
-                                        <Text style={styles.eventName}>{fee.title}</Text>
-                                        <Text style={styles.experience}>{fee.description}</Text>
+                                        <Text style={styles.eventName}>{fee?.meeting_type == 'video' ? meetingTitle[2] : fee?.meeting_type == 'voice' ? meetingTitle[0] : meetingTitle[1]}</Text>
+                                        <Text style={styles.experience}>{fee?.meeting_type_detail}</Text>
                                     </View>
                                 </View>
                                 <View style={styles.leftSection}>
-                                    <Text style={styles.price}>${fee.charge}</Text>
+                                    <Text style={styles.price}>${fee?.fees}</Text>
                                 </View>
                             </View>
                         )

@@ -1,19 +1,16 @@
 import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity, ScrollView } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const DoctorProfile = ({ navigation }) => {
-    const data = [
-        {
-            id: 1,
-            title: 'Dr. Sara Thomson',
-            rating: 4.7,
-            specialty: 'Cardiology',
-            designation: 'Doctor',
-            experience: '5+ Year Experience',
-            image:
-                'https://raw.githubusercontent.com/crowdbotics/modules/master/modules/screen-explore-list/assets/eventImage-lg.png'
-        }
-    ];
+const DoctorProfile = ({ navigation, route }) => {
+    const [serviceProvider, setServiceProvider] = useState({});
+
+useEffect(() => {
+    if (route?.params.item) {
+        const { item } = route.params;
+        setServiceProvider(item);
+      }
+  
+}, [])
 
     return (
         <View style={styles.container}>
@@ -22,15 +19,15 @@ const DoctorProfile = ({ navigation }) => {
                     <View style={styles.walletCard}>
                         <View style={styles.walletInner}>
                             <View style={styles.imgContainer}>
-                                <Image source={{ uri: 'etrwet' }} style={styles.image} />
+                                <Image source={{ uri: serviceProvider?.image }} style={styles.image} />
                             </View>
                             <View style={styles.walletCarder}>
-                                <Text style={styles.eventName}>{data[0].title}</Text>
-                                <Text style={styles.eventType}>{data[0].specialty} </Text>
-                                <Text style={styles.experience}>{data[0].experience} </Text>
+                                <Text style={styles.eventName}>{serviceProvider?.name}</Text>
+                                <Text style={styles.eventType}>{serviceProvider?.category_name} </Text>
+                                <Text style={styles.experience}>{serviceProvider?.experience}+ Years Experience </Text>
                                 <View style={styles.ratingContainer}>
                                     <Image source={require('./assets/rating.png')} style={styles.image} />
-                                    <Text style={styles.attending}>(16 reviews)</Text>
+                                    <Text style={styles.attending}>({serviceProvider?.reviews?.length} reviews)</Text>
                                 </View>
                             </View>
                         </View>
@@ -42,7 +39,7 @@ const DoctorProfile = ({ navigation }) => {
                     </View>
                     <View style={styles.scheduledContainer}>
                         <Text style={styles.dateTitle}>Working Time</Text>
-                        <Text style={styles.time}>Mon - Sat ( 09:30AM - 09:00PM)</Text>
+                        <Text style={styles.time}>{serviceProvider?.available_days ? `${serviceProvider?.available_days[0]} - ${serviceProvider?.available_days[1]}` : ""} ( {serviceProvider?.opening_time}AM - {serviceProvider?.closing_time}PM)</Text>
                     </View>
                 </View>
                 <View style={styles.headingContainer}>
@@ -54,11 +51,7 @@ const DoctorProfile = ({ navigation }) => {
                     <View style={styles.descriptionContainer}>
                         <Text style={styles.descriptionTitle}>Biography:</Text>
                         <Text style={styles.descriptionText}>
-                            Stulti autem malorum memoria torquentur, sapientes bona praeterita grata recordatione
-                            renovata delectant eadem ille sanabat.
-                        </Text>
-                        <Text style={styles.bottomText}>
-                            Nec lapathi suavitatem acupenseri Galloni Laelius anteponebat, sed suavitatem ipsam.
+                            {serviceProvider?.biography}
                         </Text>
                     </View>
 
@@ -70,7 +63,7 @@ const DoctorProfile = ({ navigation }) => {
                 </View>
                 <View style={styles.buttonBottom}>
                     <Button
-                        onPress={() => navigation.navigate('login', { route: 'SignUpScreen' })}
+                        onPress={() => navigation.navigate('appointmentScreen')}
                         buttonText="Book Appointment"
                         backgroundColor={'#12D790'}
                     />
