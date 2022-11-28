@@ -1,39 +1,45 @@
-import { View, Text, StyleSheet, Image, ScrollView, TextInput, Pressable } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { Switch } from 'react-native';
 import { ImageBackground } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { getClientProfile } from '../../store';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const Profile = ({ navigation }) => {
+    const dispatch = useDispatch();
     const [isEnabled, setIsEnabled] = useState(true);
+    const [client, setClient] = useState([]);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const [isEnabled1, setIsEnabled1] = useState(true);
     const toggleSwitch1 = () => setIsEnabled1(previousState => !previousState);
-    const data = [
-        {
-            id: 1,
-            title: 'Dr. Sara Thomson',
-            rating: 4.7,
-            specialty: 'Cardiology',
-            designation: 'Doctor',
-            experience: '5+ Year Experience',
-            image:
-                'https://raw.githubusercontent.com/crowdbotics/modules/master/modules/screen-explore-list/assets/eventImage-lg.png'
-        }
-    ];
+    
+    const {api} = useSelector((state) => state?.appointment)
+
+    useEffect(() => {
+      dispatch(getClientProfile())
+      .then(unwrapResult).then((res) =>{
+        setClient(res);
+      }).catch((error) =>{
+        console.log("Error: ", error)
+      })
+    }, [])
+    
 
     return (
         <View style={styles.container}>
+            {api.loading == 'pending' && <Loader></Loader>}
             <ScrollView>
                 <View style={styles.headerContainer}>
                     <View style={styles.walletCard}>
                         <View style={styles.walletInner}>
                             <View style={styles.imgContainer}>
-                                <ImageBackground source={require('./assets/profile.png')} resizeMode="cover" style={styles.backImage}>
+                                <ImageBackground source={{uri: client[0]?.image || "ci"}} resizeMode="cover" style={styles.backImage}>
                                     <Image source={require('./assets/online.png')} style={styles.image} />
                                 </ImageBackground>
                             </View>
                             <View style={styles.walletCarder}>
-                                <Text style={styles.eventName}>{data[0].title}</Text>
+                                <Text style={styles.eventName}>{client[0]?.full_name}</Text>
                                 <View style={styles.leftSection}>
                                     <Image source={require('./assets/phone.png')} style={styles.phone} />
                                     <Image source={require('./assets/message.png')} style={styles.phone} />
@@ -57,35 +63,37 @@ const Profile = ({ navigation }) => {
                 <View style={styles.cardInfo}>
                     <View style={[styles.headingContainer, { paddingHorizontal: 5 }]}>
                         <Text style={styles.title}>My appointments</Text>
+                        <Pressable onPress={() =>navigation.navigate("myAppointmentsScreen")}>
                         <Text style={styles.subTitle}>View now</Text>
+                        </Pressable>
                     </View>
 
                     <Text style={styles.subHeading}>Profile details</Text>
                     <Text style={styles.mr10}>Full Name</Text>
                     <View style={styles.InputBox}>
-                        <TextInput placeholder="Enter" placeholderTextColor={"#000"} />
+                        <TextInput value={client[0]?.full_name} placeholder="Enter" placeholderTextColor={"#000"} />
                     </View>
                     <Text style={styles.mr10}>Email address</Text>
                     <View style={styles.InputBox}>
-                        <TextInput placeholder="Enter" placeholderTextColor={"#000"} />
+                        <TextInput value={client[0]?.email} placeholder="Enter" placeholderTextColor={"#000"} />
                     </View>
                     <View style={styles.feeContainer}>
                         <View>
                             <Text style={[styles.mr10, { marginLeft: 15 }]}>Age</Text>
                             <View style={styles.feeSection}>
-                                <TextInput placeholder="Enter" placeholderTextColor={"#000"} />
+                                <TextInput value={client[0]?.age.toString()} placeholder="Enter" placeholderTextColor={"#000"} />
                             </View>
                         </View>
                         <View>
                             <Text style={[styles.mr10, { marginLeft: 15 }]}>Gender</Text>
                             <View style={styles.feeSection}>
-                                <TextInput placeholder="Enter" placeholderTextColor={"#000"} />
+                                <TextInput value={client[0]?.gender} placeholder="Enter" placeholderTextColor={"#000"} />
                             </View>
                         </View>
                     </View>
                     <Text style={styles.mr10}>Add notes</Text>
                     <View style={styles.textInput}>
-                        <Input placeholder="Enter" multiline={true} />
+                        <Input value={client[0]?.notes} placeholder="Enter" multiline={true} />
                     </View>
                     <Text style={[styles.subHeading, { marginBottom: 5, marginTop: 25 }]}>System request access</Text>
                     <View style={styles.sectionContainer}>
@@ -125,7 +133,7 @@ const Profile = ({ navigation }) => {
                         // @ts-ignore
                         require("./assets/user.png")
                     ]}
-                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'accountScreen']}
+                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'patientProfileScreen']}
                     navigation={navigation}
                 />
             </View>
@@ -370,3 +378,33 @@ const footerStyles = StyleSheet.create({
         resizeMode: "contain"
     }
 });
+
+const Loader = () => {
+    return (
+      <View style={loaderStyles.container}>
+        <View style={loaderStyles.loaderContainer}>
+          <ActivityIndicator color="#000" />
+        </View>
+      </View>
+    );
+  };
+  const loaderStyles = StyleSheet.create({
+    container: {
+      width: "100%",
+      height: "100%",
+      position: "absolute",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999
+    },
+    loaderContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#F5F5F5",
+      shadowColor: "#000",
+      elevation: 3
+    }
+  });

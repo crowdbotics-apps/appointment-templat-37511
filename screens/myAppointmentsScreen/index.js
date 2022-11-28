@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { unwrapResult } from "@reduxjs/toolkit";
+import React, { useEffect, useState } from "react";
 import {
     Text,
     StyleSheet,
@@ -6,21 +7,35 @@ import {
     ScrollView,
     Image,
     Pressable,
-    ImageBackground
+    ImageBackground,
+    ActivityIndicator
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { getAppointmentList } from "../../store";
 
 const MyAppointments = ({ navigation }) => {
-
+    const dispatch = useDispatch();
+    const [appointments, setAppointments] = useState([]);
+    const { api } = useSelector(state => state?.appointment);
+    useEffect(() => {
+        dispatch(getAppointmentList())
+            .then(unwrapResult).then((res) => {
+                setAppointments(res);
+            }).catch((error) => { console.log("Error: ", error) })
+    }, [])
     return (
         <View style={styles.container}>
+             {api.loading == 'pending' && <Loader></Loader>}
             <ScrollView>
                 <View style={styles.topHeader}>
                     <ImageBackground source={require('./assets/background.png')} resizeMode="cover" style={styles.backgroundImage}>
                         <View style={styles.innerWrapper}>
+                            <Pressable onPress={() =>navigation.goBack()}>
                             <Image
                                 source={require("./assets/back.png")}
                                 style={styles.back}
                             />
+                            </Pressable>
                             <Text style={styles.heading}>
                                 My appointments
                             </Text>
@@ -111,7 +126,7 @@ const MyAppointments = ({ navigation }) => {
                         // @ts-ignore
                         require("./assets/user.png")
                     ]}
-                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'accountScreen']}
+                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'patientProfileScreen']}
                     navigation={navigation}
                 />
             </View>
@@ -153,7 +168,7 @@ const styles = StyleSheet.create({
         left: '-15%',
         bottom: "-15%",
     },
-    back: { height: 18, width: 18, resizeMode: "contain", marginTop: 15, marginBottom: 10, marginLeft: 20 },
+    back: { height: 18, width: 18, resizeMode: "contain", marginTop: 15, marginBottom: 10, marginLeft: 20, zIndex: 99 },
     dateContainer: {
         backgroundColor: "#F4F8FA",
         justifyContent: 'center',
@@ -237,7 +252,7 @@ const TabView = ({ tabTitles, selected }) => {
                     }
                     key={index}
                 >
-                    <Text style={{ color: index === selected ? "#fff" : "" }}>{title}</Text>
+                    <Text style={{ color: index === selected ? "#fff" : "#000" }}>{title}</Text>
                 </View>
             ))}
         </View>
@@ -328,3 +343,35 @@ const footerStyles = StyleSheet.create({
         resizeMode: "contain"
     }
 });
+
+
+
+const Loader = () => {
+    return (
+      <View style={loaderStyles.container}>
+        <View style={loaderStyles.loaderContainer}>
+          <ActivityIndicator color="#000" />
+        </View>
+      </View>
+    );
+  };
+  const loaderStyles = StyleSheet.create({
+    container: {
+      width: "100%",
+      height: "100%",
+      position: "absolute",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999
+    },
+    loaderContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#F5F5F5",
+      shadowColor: "#000",
+      elevation: 3
+    }
+  });

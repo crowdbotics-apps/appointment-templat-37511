@@ -4,17 +4,17 @@ import { useSelector } from 'react-redux';
 
 const Search = ({ navigation }) => {
     const [providersList, setProvidersList] = useState([]);
-    const { api, categories, service_providers } = useSelector(state => state?.appointment);
+    const { api, categories, service_providers_list } = useSelector(state => state?.appointment);
 
     useEffect(() => {
-        setProvidersList(service_providers);
+        setProvidersList(service_providers_list);
       }, [])
 
     const handleSearchStore = async (text) => {
         if (!text) {
-          setProvidersList(service_providers)
+          setProvidersList(service_providers_list)
         } else {
-          const searchedVenders = service_providers.filter(element => element.name.toLowerCase().includes(text.toLowerCase()));
+          const searchedVenders = service_providers_list.filter(element => element.name.toLowerCase().includes(text.toLowerCase()));
           setProvidersList(searchedVenders);
         }
       }
@@ -55,7 +55,7 @@ const Search = ({ navigation }) => {
                 />
             </View>
             <View style={[styles.headingContainer, styles.topsec]}>
-                <Text style={styles.title}>{service_providers.length} Doctors Found</Text>
+                <Text style={styles.title}>{service_providers_list.length} Doctors Found</Text>
                 <Text></Text>
             </View>
             <ScrollView style={{ marginBottom: 65 }}>
@@ -71,7 +71,7 @@ const Search = ({ navigation }) => {
                                     <Text style={styles.eventType}>{item?.category_name} </Text>
                                     <View style={styles.ratingContainer}>
                                         <Image source={require("./assets/rating.png")} style={styles.image} />
-                                        <Text style={styles.attending}>({item?.reviews.length} reviews)</Text>
+                                        <Text style={styles.attending}>({item?.review_service_prov.length} reviews)</Text>
                                     </View>
                                 </View>
                             </View>
@@ -98,7 +98,7 @@ const Search = ({ navigation }) => {
                         // @ts-ignore
                         require("./assets/user.png")
                     ]}
-                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'accountScreen']}
+                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'patientProfileScreen']}
                     navigation={navigation}
                 />
             </View>

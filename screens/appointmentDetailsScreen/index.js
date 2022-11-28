@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable, Image, TextInput, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 
-const AppointmentDetails = ({ setModalVisible }) => {
+const AppointmentDetails = ({ selectedAppointment, setModalVisible }) => {
     // @ts-ignore
     const [profile, setProfile] = useState({
         age: "25",
@@ -24,7 +24,7 @@ const AppointmentDetails = ({ setModalVisible }) => {
                 <View style={[styles.mainContainer]}>
                     <View style={[styles.docContainer]}>
                         <Text style={styles.descr}>Nuclear cardiac stress test</Text>
-                        <Text style={styles.titleText}>Tara Thompson</Text>
+                        <Text style={styles.titleText}>{selectedAppointment?.name}</Text>
                     </View>
                     <View style={styles.inner}>
                         <Image source={require(
@@ -75,8 +75,8 @@ const AppointmentDetails = ({ setModalVisible }) => {
                 </View>
 
                 <View style={[styles.inner, { marginVertical: 10 }]}>
-                    <Text style={styles.text}>09:00 am</Text>
-                    <Text style={styles.text}>10:00 am</Text>
+                    <Text style={styles.text}>{selectedAppointment?.start_time.substr(0,5)} am</Text>
+                    <Text style={styles.text}>{selectedAppointment?.end_time.substr(0,5)} am</Text>
                 </View>
 
                 <View style={styles.cardInfo}>
@@ -85,19 +85,19 @@ const AppointmentDetails = ({ setModalVisible }) => {
                         <View>
                             <Text style={[styles.mr10]}>Age</Text>
                             <View style={styles.feeSection}>
-                                <TextInput placeholder={profile.age} placeholderTextColor={"#000"} editable={false} />
+                                <TextInput value={selectedAppointment?.age.toString()} editable={false} style={styles.black}/>
                             </View>
                         </View>
                         <View>
                             <Text style={[styles.mr10]}>Gender</Text>
                             <View style={styles.feeSection}>
-                                <TextInput placeholder={profile.gender} placeholderTextColor={"#000"} editable={false} />
+                                <TextInput value={selectedAppointment?.gender} editable={false} style={styles.black}/>
                             </View>
                         </View>
                     </View>
                     <Text style={styles.mr10}>Notes</Text>
                     <View style={styles.textInput}>
-                        <Text style={styles.notes}>{profile.notes}</Text>
+                        <Text style={styles.notes}>{selectedAppointment?.add_note}</Text>
                     </View>
                 </View>
             </ScrollView>
@@ -213,5 +213,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#f7f7f7"
     },
     text: { fontSize: 16, color: "#fff", backgroundColor: "#12D790", paddingHorizontal: '13%', paddingVertical: '3%', borderRadius: 5 },
-    notes: { color: "#7C7C7C", padding: 10 }
+    notes: { color: "#000", padding: 10 },
+    black:{color: "#000"}
 })

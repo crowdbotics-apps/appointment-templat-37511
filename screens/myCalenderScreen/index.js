@@ -9,7 +9,7 @@ const MyCalender = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Pressable>
+                <Pressable onPress={() =>navigation.goBack()}>
                     <Image
                         // @ts-ignore
                         source={require("./assets/back.png")}
@@ -18,7 +18,7 @@ const MyCalender = ({ navigation }) => {
                 </Pressable>
 
                 <Text style={[styles.headingText]}>Schedule</Text>
-                <Pressable>
+                <Pressable onPress={() =>navigation.navigate("doctorNotificationsScreen")}>
                     <Image
                         // @ts-ignore
                         source={require("./assets/bell.png")}

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   View,
   Text,
@@ -188,7 +188,7 @@ export const SignIn = ({ navigation }) => {
           if (res.user.user_type == 'client') {
             navigation.navigate("categoryScreen");
           } else {
-            navigation.navigate("doctorProfileScreen");
+            navigation.navigate("profileScreen");
           }
           setEmail("");
           setPassword("")
@@ -218,6 +218,13 @@ export const SignIn = ({ navigation }) => {
     setPassword(value)
     resetValidations()
   }
+
+  useEffect(() => {
+    setEmail('')
+    setPassword(''),
+    setApiError([]);
+  }, [])
+  
   return (
     <View style={styles.container}>
       {isLoading && <Loader></Loader>}

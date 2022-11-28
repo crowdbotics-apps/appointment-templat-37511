@@ -1,44 +1,79 @@
-import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity, ScrollView, TextInput, Modal, Alert, Dimensions } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity, ScrollView, Modal, Dimensions, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import AppointmentDetails from '../appointmentDetailsScreen';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAppointmentList, getServiceProviderProfile } from '../../store';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const Profile = ({ navigation }) => {
     const windowWidth = Dimensions.get('window').width;
     const [modalVisible, setModalVisible] = useState(false);
+    const { api } = useSelector((state) => state?.appointment)
+    const dispatch = useDispatch();
+    const [serviceProvider, setServiceProvider] = useState({});
+    const [myAppointments, setMyAppointments] = useState([]);
+    const [selectedAppointment, setSelectedAppointment] = useState({});
+
+    useEffect(() => {
+        dispatch(getServiceProviderProfile())
+            .then(unwrapResult).then((res) => {
+                setServiceProvider(res[0]);
+            }).catch((error) => {
+                console.log("Error: ", error)
+            })
+    }, [])
+
+    useEffect(() => {
+        dispatch(getAppointmentList())
+            .then(unwrapResult).then((res) => {
+                setMyAppointments(res);
+            }).catch((error) => {
+                console.log("Error: ", error)
+            })
+    }, [])
+
     const data = [
         {
             id: 1,
-            title: 'Electrocardiogram (ECG)',
-            timing: "Sara Smith 09:00 am",
+            category: 'Electrocardiogram (ECG)',
+            name: "Sara Smith",
+            start_time: "09:00:00",
             image: require("./assets/heart.png")
         },
         {
             id: 2,
-            title: 'Nuclear cardiac stress test',
-            timing: "Tara Thompson 10:00 am",
+            category: 'Nuclear cardiac stress test',
+            name: "Tara Thompson",
+            start_time: "10:00:00",
             image: require("./assets/heart.png")
         },
         {
             id: 3,
-            title: 'Magnetic resonance imaging',
-            timing: "Loyd Smith 12:00 am",
+            category: 'Magnetic resonance imaging',
+            name: "Loyd Smith",
+            start_time: "11:00:00",
             image: require("./assets/beat.png")
         }
     ];
 
+const handleAppointmentDetails = (appointment) =>{
+    setSelectedAppointment(appointment)
+    setModalVisible(true)
+}
     return (
         <View style={styles.container}>
+            {api.loading == 'pending' && <Loader></Loader>}
             <ScrollView>
                 <View style={styles.headerContainer}>
                     <View style={styles.walletCard}>
                         <View style={styles.walletInner}>
                             <View style={styles.imgContainer}>
-                                <Image source={{ uri: 'etrwet' }} style={styles.image} />
+                                <Image source={{ uri: serviceProvider?.image }} style={styles.image} />
                             </View>
                             <View style={styles.walletCarder}>
-                                <Text style={styles.eventName}>Dr. Tara Simpsons</Text>
+                                <Text style={styles.eventName}>{serviceProvider?.name}</Text>
                                 <Text style={styles.experience}>Working Time</Text>
-                                <Text style={styles.eventType}>Mon - Sat ( 09:30AM - 09:00PM)</Text>
+                                <Text style={styles.eventType}>{serviceProvider?.available_days ? `${serviceProvider?.available_days[0]} - ${serviceProvider?.available_days[1]}` : ""} ( {serviceProvider?.opening_time}AM - {serviceProvider?.closing_time}PM)</Text>
                             </View>
                         </View>
                         <View style={styles.leftSection}>
@@ -48,36 +83,41 @@ const Profile = ({ navigation }) => {
                     </View>
                     <View style={styles.scheduledContainer}>
                         <Text style={styles.dateTitle}>Schedule/Available time</Text>
+                        <Pressable onPress={() =>navigation.navigate("myCalenderScreen")}>
                         <Text style={styles.subTitle}>View now</Text>
+                        </Pressable>
                     </View>
                 </View>
                 <View style={styles.headingContainer}>
                     <TabView tabTitles={["Appointments", "Biography"]} selected={0} />
+                    <Pressable onPress={() =>navigation.navigate("doctorNotificationsScreen")}>
                     <Image source={require(
                         // @ts-ignore
                         "./assets/notification.png")} style={styles.notification} />
+                    </Pressable>
+                   
                 </View>
 
                 {
-                    data.map((item, index) =>
+                    myAppointments.map((item, index) =>
                         <View style={styles.mainCard} key={index}>
                             <View style={styles.walletCard}>
                                 <View style={styles.walletInner}>
                                     <View style={styles.imgContainer2}>
                                         <Image
-                                            source={item.image}
+                                            source={require("./assets/beat.png")}
                                             style={styles.image}
                                         />
                                     </View>
                                     <View style={styles.walletCarder}>
-                                        <Text style={styles.date}>{item.title}</Text>
-                                        <Text style={styles.eventName}>{item.timing}</Text>
+                                        <Text style={styles.date}>{item?.servicer_detail?.category_name}</Text>
+                                        <Text style={styles.eventName}>{item?.name} {item?.start_time.substr(0, 5)} am</Text>
                                     </View>
                                 </View>
                             </View>
                             <View style={styles.buttonBottom}>
                                 <Button buttonText={"ACCEPTED"} backgroundColor={"#23AAFA"} />
-                                <Button buttonText={"DETAILS"} backgroundColor={"#FFF"} color={"#23AAFA"} borderColor={"#23AAFA"} borderWidth={1} onPress={() => setModalVisible(!modalVisible)} />
+                                <Button buttonText={"DETAILS"} backgroundColor={"#FFF"} color={"#23AAFA"} borderColor={"#23AAFA"} borderWidth={1} onPress={() => handleAppointmentDetails(item)} />
                             </View>
 
                         </View>
@@ -89,12 +129,11 @@ const Profile = ({ navigation }) => {
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
-                    Alert.alert("Modal has been closed.");
                     setModalVisible(!modalVisible);
                 }}
             >
                 <View style={[styles.centeredView, { width: windowWidth }]}>
-                    <AppointmentDetails setModalVisible={setModalVisible} />
+                    <AppointmentDetails selectedAppointment={selectedAppointment} setModalVisible={setModalVisible} />
                 </View>
             </Modal>
         </View >
@@ -141,7 +180,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column'
     },
     eventName: {
-        color: '#1E2022',
+        color: '#000',
         fontSize: 14,
         marginLeft: 10,
         fontWeight: 'bold',
@@ -341,5 +380,35 @@ const tabViewStyles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#fff",
         borderRadius: 10
+    }
+});
+
+const Loader = () => {
+    return (
+        <View style={loaderStyles.container}>
+            <View style={loaderStyles.loaderContainer}>
+                <ActivityIndicator color="#000" />
+            </View>
+        </View>
+    );
+};
+const loaderStyles = StyleSheet.create({
+    container: {
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 9999
+    },
+    loaderContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#F5F5F5",
+        shadowColor: "#000",
+        elevation: 3
     }
 });

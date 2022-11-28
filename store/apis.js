@@ -41,18 +41,18 @@ const getMeetingInfo = async () => {
 	return appointmentAPI.get('/api/v1/meeting-info/');
 };
 
-const getCountry = async (country) => {
+const getClientProfile = async () => {
 	const token = await getItem('token');
-	return appointmentAPI.get(`${country}`, {
+	return appointmentAPI.get('/api/v1/client/', {
 		headers: {
 			Authorization: `Token ${token}`
 		}
 	});
 };
 
-const getUserInfo = async () => {
+const getServiceProviderProfile = async () => {
 	const token = await getItem('token');
-	return appointmentAPI.get(`/rest-auth/user/`, {
+	return appointmentAPI.get(`/api/v1/srvc_prvdr/`, {
 		headers: {
 			Authorization: `Token ${token}`
 		}
@@ -74,7 +74,7 @@ export const api = {
 	getCategoriesList,
 	getServiceProviderList,
 	getMeetingInfo,
-	getCountry,
-	getUserInfo,
+	getClientProfile,
+	getServiceProviderProfile,
 	getOrderList
 };

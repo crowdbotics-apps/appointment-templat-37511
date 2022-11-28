@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, Pressable, Dimensions, FlatList, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Image, Pressable, Dimensions, FlatList, ScrollView, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { getServiceProviderList } from '../../store';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -30,6 +30,7 @@ const Home = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            {api.loading == 'pending' && <Loader></Loader>}
             <View style={styles.headerContainer}>
                 <View style={styles.header}>
                     <Image
@@ -82,7 +83,7 @@ const Home = ({ navigation }) => {
                                     <Text style={styles.eventType}>{item.category_name} </Text>
                                     <View style={styles.ratingContainer}>
                                         <Image source={require("./assets/rating.png")} style={styles.image} />
-                                        <Text style={styles.attending}>({item?.reviews?.length} reviews)</Text>
+                                        <Text style={styles.attending}>({item?.review_service_prov?.length} reviews)</Text>
                                     </View>
                                 </View>
                             </View>
@@ -104,7 +105,7 @@ const Home = ({ navigation }) => {
                         // @ts-ignore
                         require("./assets/user.png")
                     ]}
-                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'accountScreen']}
+                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'patientProfileScreen']}
                     navigation={navigation}
                 />
             </View>
@@ -252,7 +253,6 @@ const footerStyles = StyleSheet.create({
 
 
 const ExploreItem = ({ event, width, navigation }) => {
-    console.log("event: ", event)
     return (
         <View style={[exploreItemStyles.container, { width: width - 120 }]}>
             <Pressable onPress={() => { navigation.navigate('searchScreen') }}>
@@ -265,7 +265,7 @@ const ExploreItem = ({ event, width, navigation }) => {
             </Pressable>
             <View style={exploreItemStyles.detailsContainer}>
                 <Image source={require("./assets/star.png")} style={exploreItemStyles.star} />
-                <Text style={{ color: "#979797" }}>{event?.reviews.length > 0 ? event?.reviews[0]?.rating:''}</Text>
+                <Text style={{ color: "#979797" }}>{event?.review_service_prov.length > 0 ? event?.review_service_prov[0]?.rating: '0.0'}</Text>
             </View>
         </View>
     );
@@ -355,3 +355,34 @@ const courseStyles = StyleSheet.create({
     text: { color: "#23AAFA", textAlign: 'center', fontSize: 12 }
 
 });
+
+
+const Loader = () => {
+    return (
+      <View style={loaderStyles.container}>
+        <View style={loaderStyles.loaderContainer}>
+          <ActivityIndicator color="#000" />
+        </View>
+      </View>
+    );
+  };
+  const loaderStyles = StyleSheet.create({
+    container: {
+      width: "100%",
+      height: "100%",
+      position: "absolute",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999
+    },
+    loaderContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#F5F5F5",
+      shadowColor: "#000",
+      elevation: 3
+    }
+  });

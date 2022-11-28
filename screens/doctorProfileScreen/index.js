@@ -27,7 +27,7 @@ useEffect(() => {
                                 <Text style={styles.experience}>{serviceProvider?.experience}+ Years Experience </Text>
                                 <View style={styles.ratingContainer}>
                                     <Image source={require('./assets/rating.png')} style={styles.image} />
-                                    <Text style={styles.attending}>({serviceProvider?.reviews?.length} reviews)</Text>
+                                    <Text style={styles.attending}>({serviceProvider?.review_service_prov?.length} reviews)</Text>
                                 </View>
                             </View>
                         </View>
@@ -81,7 +81,7 @@ useEffect(() => {
                         // @ts-ignore
                         require('./assets/user.png')
                     ]}
-                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'accountScreen']}
+                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'patientProfileScreen']}
                     navigation={navigation}
                 />
             </View>
