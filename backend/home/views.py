@@ -1,8 +1,7 @@
 from django.shortcuts import render
-from django.db.models import Q, Sum, Avg, Count
+from django.db.models import Q, Sum
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import ListCreateAPIView
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from home.api.v1.serializers import *
 
@@ -30,25 +29,23 @@ class CreateServiceProviderView(ModelViewSet):
     serializer_class = ServiceProviderSerializer
     queryset = ServiceProvider.objects.all()
 
-
-    # def get(self, request, *args, **kwargs):
-    #     location = Location.objects.filter(location_service_provide__user=self.request.user).values('location_service_provide__name', 'address', 'lng', 'lat')
-    #     detail = ServiceProvider.objects.filter(user=self.request.user).values('uuid', 'name', 'category', 'gender', 'speciality', 'available_days', 'opening_time', 'closing_time', 'experience')
-    #     reviews = Review.objects.filter(to_service_provider__user=self.request.user).values('to_service_provider__name', 'to_service_provider__category__title').annotate(Rating=Avg('rating'), Reviews=Count('from_client'))
-    #     return Response({'service_provider': detail, 'reviews': reviews, 'location': location})
+    def get_queryset(self):
+        queryset = ServiceProvider.objects.select_related("category", "user").prefetch_related('locations', 'review_service_prov')
+        if self.request.user.id:
+            queryset = queryset.filter(user=self.request.user)
+        return queryset
 
 
 class CreateLocationView(ReadOnlyModelViewSet):
     serializer_class = LocationSerializer
 
     def get_queryset(self):
-        return Location.objects.filter(location_service_provide__user=self.request.user)
+        return Location.objects.all()
 
 
 class CreateClientView(ModelViewSet):
     serializer_class = ClientSerializer
     permission_classes = [IsAuthenticated]
-    queryset = Clients.objects.all()
 
     def get_queryset(self):
         return Clients.objects.filter(user=self.request.user)
@@ -56,7 +53,6 @@ class CreateClientView(ModelViewSet):
 
 class ClientReviewView(ModelViewSet):
     serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
 
     def get_queryset(self):
         return Review.objects.all()
@@ -67,7 +63,21 @@ class AppointmentView(ModelViewSet):
     queryset = Appointment.objects.all()
 
     def get_queryset(self):
-        return Appointment.objects.filter(Q(client__user=self.request.user) | Q(service_provider__user=self.request.user))
+        queryset = self.queryset.all()
+        return queryset.filter(Q(client__user=self.request.user) | Q(service_provider__user=self.request.user))
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        sp = ServiceProvider.objects.get(id=data['service_provider'])
+        data['appointment_cost'] = sp.appointment_fee
+        mt = MeetingInformation.objects.filter(id__in=data['appointment_type']).aggregate(fees=Sum('fees'))
+        data['additional_fee'] = mt.get('fees', 0)
+        data['total'] = mt.get('fees', 0) + sp.appointment_fee
+        serializer = AppointmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
 
 
 class MeetingInfoView(ReadOnlyModelViewSet):

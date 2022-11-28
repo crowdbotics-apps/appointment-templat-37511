@@ -24,13 +24,13 @@ class Category(TimeStamp):
 
 class ServiceProvider(TimeStamp):
     WEEK_DAYS = (
-        ("mon", "Monday"),
-        ("tue", "Tuesday"),
-        ("wed", "Wednesday"),
-        ("thu", "Thursday"),
-        ("fri", "Friday"),
-        ("sat", "Saturday"),
-        ("sun", "Sunday"),
+        ("Mon", "Monday"),
+        ("Tue", "Tuesday"),
+        ("Wed", "Wednesday"),
+        ("Thu", "Thursday"),
+        ("Fri", "Friday"),
+        ("Sat", "Saturday"),
+        ("Sun", "Sunday"),
     )
 
     GENDER = [
@@ -42,17 +42,16 @@ class ServiceProvider(TimeStamp):
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=50)
     gender = models.CharField(max_length=6, choices=GENDER)
-    speciality = models.CharField(max_length=100)
     biography = models.TextField()
     experience = models.PositiveIntegerField()
     available_days = MultiSelectField(choices=WEEK_DAYS)
     opening_time = models.TimeField()
     closing_time = models.TimeField()
-    appointment_fee = models.DecimalField(max_digits=5, decimal_places=2)
+    appointment_fee = models.DecimalField(max_digits=6, decimal_places=2)
     image = models.ImageField()
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class Clients(TimeStamp):
@@ -80,7 +79,7 @@ class Review(TimeStamp):
     rating = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])
 
     def __str__(self):
-        return self.from_client
+        return self.comment
 
 
 class MeetingInformation(TimeStamp):
@@ -131,15 +130,15 @@ class Appointment(TimeStamp):
     age = models.PositiveIntegerField()
     gender = models.CharField(max_length=7, choices=GENDER)
     add_note = models.TextField()
-    appointment_cost = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
-    additional_fee = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
-    sub_total = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    discount = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    total = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    appointment_cost = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    additional_fee = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    sub_total = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    discount = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    total = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     appointment_type = models.ManyToManyField(MeetingInformation, related_name='appointment_meeting_type')
 
     def __str__(self):
-        return str(self.service_provider)
+        return str(self.name)
 
 
 
