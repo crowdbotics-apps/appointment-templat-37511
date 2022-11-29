@@ -136,7 +136,7 @@ const Schedule = ({ navigation }) => {
                         // @ts-ignore
                         require("./assets/user.png")
                     ]}
-                    routes={['homeScreen', 'orderStatusScreen', 'searchScreen', 'patientProfileScreen']}
+                    routes={['homeScreen', 'scheduleScreen', 'searchScreen', 'patientProfileScreen']}
                     navigation={navigation}
                 />
             </View>

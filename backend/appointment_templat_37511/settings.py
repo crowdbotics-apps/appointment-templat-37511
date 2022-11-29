@@ -87,6 +87,8 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'drf_yasg',
     'storages',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.apple',
 ]
 MODULES_APPS = get_modules()
 
@@ -213,8 +215,10 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
 # Custom user model
 AUTH_USER_MODEL = "users.User"
 

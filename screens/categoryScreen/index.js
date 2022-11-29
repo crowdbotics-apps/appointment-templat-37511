@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCategoriesList } from '../../store';
 const ChooseCategory = ({ navigation }) => {
     const dispatch = useDispatch();
-    const [categories, setCategories] = useState([]);
+    const [categoriesList, setCategoriesList] = useState([]);
     const { api } = useSelector(state => state?.appointment);
     const categoryImages = [
         require("./assets/heart.png"),
@@ -19,18 +19,31 @@ const ChooseCategory = ({ navigation }) => {
     ]
 
     useEffect(() => {
-        dispatch(getCategoriesList())
-            .then(unwrapResult).then((res) => {
-                setCategories(res)
-            }).catch((error) => { console.log("Error: ", error) })
+            dispatch(getCategoriesList())
+                .then(unwrapResult).then((res) => {
+                    setCategoriesList(res)
+                }).catch((error) => { console.log("Error: ", error) })
     }, [])
 
-    useEffect(() => {
-    setTimeout(() => {
-        navigation.navigate('homeScreen')
-    }, 3000);
-    }, [])
-    
+
+    const handleSelectCategory = (item, item_index) => {
+        const newState = categoriesList.map((obj, index) => {
+            if (index == item_index) {
+                if (obj.isSelected) {
+                    return { ...obj, isSelected: false };
+                }
+                if (!obj.isSelected) {
+                    return { ...obj, isSelected: true };
+                }
+            }
+            return obj;
+        });
+        setCategoriesList(newState);
+        setTimeout(() => {
+            navigation.navigate("homeScreen")
+        }, 500);
+    }
+
     return (
         <View style={styles.container}>
 
@@ -38,8 +51,8 @@ const ChooseCategory = ({ navigation }) => {
             {api.loading == 'pending' && <Loader />}
             <FlatList
                 style={styles.courseList}
-                data={categories}
-                renderItem={({ item, index }) => <Category category={item} index= {index} categoryImages={categoryImages}/>}
+                data={categoriesList}
+                renderItem={({ item, index }) => <Category category={item} index={index} categoryImages={categoryImages} handleSelectCategory={handleSelectCategory} />}
                 numColumns={2}
                 keyExtractor={item => item.id.toString()}
                 columnWrapperStyle={styles.columnWrapper}
@@ -67,12 +80,12 @@ const styles = StyleSheet.create({
 })
 
 
-const Category = ({ category, index, categoryImages }) => {
+const Category = ({ category, index, categoryImages, handleSelectCategory }) => {
     return (
-        <View style={courseStyles.container}>
-            <Image source={categoryImages[index]} style={courseStyles.image} />
-            <Text style={[courseStyles.text, { color: "#000" }]}>{category.title}</Text>
-        </View>
+        <Pressable onPress={() => handleSelectCategory(category, index)} style={courseStyles.container}>
+            <Image source={categoryImages[index]} style={courseStyles.image} tintColor={category.isSelected ? "#23AAFA" : "#DBDBDB"} />
+            <Text style={[courseStyles.text, { color: category.isSelected ? "#23AAFA" : "#000" }]}>{category.title}</Text>
+        </Pressable>
     );
 };
 
