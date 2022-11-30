@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 
 from modules.django_services_provider.services_provider.api.v1.serializers import CategorySerializer, ServiceProviderSerializer, LocationSerializer, \
-    AppointmentSerializer, MeetingInfoSerializer
+     MeetingInfoSerializer
 
-from modules.django_services_provider.services_provider.models import Category, ServiceProvider, Location, Appointment, MeetingInformation
+from modules.django_services_provider.services_provider.models import Category, ServiceProvider, Location, MeetingInformation
 
 
 class CategoryView(ReadOnlyModelViewSet):
@@ -35,30 +35,6 @@ class CreateLocationView(ModelViewSet):
         if service_provider:
             queryset = queryset.filter(location_service_provide_id=int(service_provider))
         return queryset
-
-
-class AppointmentView(ModelViewSet):
-    serializer_class = AppointmentSerializer
-    queryset = Appointment.objects.all()
-
-    def get_queryset(self):
-        queryset = self.queryset.select_related("service_provider", "client")
-        if self.request.user.id:
-            queryset = queryset.filter(Q(client__user=self.request.user) | Q(service_provider__user=self.request.user))
-        return queryset
-
-    def create(self, request, *args, **kwargs):
-        data = request.data
-        sp = ServiceProvider.objects.get(id=data['service_provider'])
-        data['appointment_cost'] = sp.appointment_fee
-        mt = MeetingInformation.objects.filter(id__in=data['appointment_type']).aggregate(fees=Sum('fees'))
-        data['additional_fee'] = mt.get('fees', 0)
-        data['total'] = mt.get('fees', 0) + sp.appointment_fee
-        serializer = AppointmentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
 
 
 class MeetingInfoView(ReadOnlyModelViewSet):
