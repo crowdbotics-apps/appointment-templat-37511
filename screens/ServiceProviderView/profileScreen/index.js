@@ -2,8 +2,9 @@ import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity, ScrollView,
 import React, { useEffect, useState } from 'react';
 import AppointmentDetails from '../appointmentDetailsScreen';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAppointmentList, getServiceProviderProfile } from '../../store';
+import { getAppointmentList, getServiceProviderProfile } from '../../../store';
 import { unwrapResult } from '@reduxjs/toolkit';
+import moment from 'moment';
 
 const Profile = ({ navigation }) => {
     const windowWidth = Dimensions.get('window').width;
@@ -11,6 +12,7 @@ const Profile = ({ navigation }) => {
     const { api } = useSelector((state) => state?.appointment)
     const dispatch = useDispatch();
     const [serviceProvider, setServiceProvider] = useState({});
+    const [timePeriod, setTimePeriod] = useState({ opening_time: '', closing_time: '' })
     const [myAppointments, setMyAppointments] = useState([]);
     const [selectedAppointment, setSelectedAppointment] = useState({});
 
@@ -18,6 +20,9 @@ const Profile = ({ navigation }) => {
         dispatch(getServiceProviderProfile())
             .then(unwrapResult).then((res) => {
                 setServiceProvider(res[0]);
+                const start_time = moment(res[0].opening_time, 'HH:mm:ss').format('HH:mm')
+                const end_time = moment(res[0].closing_time, 'HH:mm:ss').format('HH:mm')
+                setTimePeriod({ opening_time: start_time, closing_time: end_time })
             }).catch((error) => {
                 console.log("Error: ", error)
             })
@@ -56,10 +61,10 @@ const Profile = ({ navigation }) => {
         }
     ];
 
-const handleAppointmentDetails = (appointment) =>{
-    setSelectedAppointment(appointment)
-    setModalVisible(true)
-}
+    const handleAppointmentDetails = (appointment) => {
+        setSelectedAppointment(appointment)
+        setModalVisible(true)
+    }
     return (
         <View style={styles.container}>
             {api.loading == 'pending' && <Loader></Loader>}
@@ -73,7 +78,7 @@ const handleAppointmentDetails = (appointment) =>{
                             <View style={styles.walletCarder}>
                                 <Text style={styles.eventName}>{serviceProvider?.name}</Text>
                                 <Text style={styles.experience}>Working Time</Text>
-                                <Text style={styles.eventType}>{serviceProvider?.available_days ? `${serviceProvider?.available_days[0]} - ${serviceProvider?.available_days[1]}` : ""} ( {serviceProvider?.opening_time}AM - {serviceProvider?.closing_time}PM)</Text>
+                                <Text style={styles.eventType}>{serviceProvider?.available_days ? `${serviceProvider?.available_days[0]} - ${serviceProvider?.available_days[1]}` : ""} ( {timePeriod?.opening_time}AM - {timePeriod?.closing_time}PM)</Text>
                             </View>
                         </View>
                         <View style={styles.leftSection}>
@@ -83,19 +88,21 @@ const handleAppointmentDetails = (appointment) =>{
                     </View>
                     <View style={styles.scheduledContainer}>
                         <Text style={styles.dateTitle}>Schedule/Available time</Text>
-                        <Pressable onPress={() =>navigation.navigate("myCalenderScreen")}>
-                        <Text style={styles.subTitle}>View now</Text>
+                        <Pressable onPress={() => {
+                            navigation.navigate('calender')
+                        }}>
+                            <Text style={styles.subTitle}>View now</Text>
                         </Pressable>
                     </View>
                 </View>
                 <View style={styles.headingContainer}>
                     <TabView tabTitles={["Appointments", "Biography"]} selected={0} />
-                    <Pressable onPress={() =>navigation.navigate("doctorNotificationsScreen")}>
-                    <Image source={require(
-                        // @ts-ignore
-                        "./assets/notification.png")} style={styles.notification} />
+                    <Pressable onPress={() => navigation.navigate("serviceProviderNotifications")}>
+                        <Image source={require(
+                            // @ts-ignore
+                            "./assets/notification.png")} style={styles.notification} />
                     </Pressable>
-                   
+
                 </View>
 
                 {

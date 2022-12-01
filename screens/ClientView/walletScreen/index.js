@@ -128,7 +128,7 @@ const WalletScreen = ({ navigation }) => {
                         // @ts-ignore
                         require("./assets/user.png")
                     ]}
-                    routes={['homeScreen', 'scheduleScreen', 'searchScreen', 'patientProfileScreen']}
+                    routes={['home', 'schedule', 'search', 'clientProfile']}
                     navigation={navigation}
                 />
             </View>
@@ -295,7 +295,10 @@ const Footer = props => {
     return (
         <View style={[footerStyles.footer]}>
             {props.images.map((image, index) => (
-                <Pressable style={footerStyles.footerItem} key={index} onPress={() => props.navigation.navigate(props.routes[index])}>
+                <Pressable style={footerStyles.footerItem} key={index} onPress={() =>  props.navigation.reset({
+                    index: 0,
+                    routes: [{ name: props.routes[index] }]
+                  })}>
                     <Image
                         style={footerStyles.footerImage}
                         source={image}

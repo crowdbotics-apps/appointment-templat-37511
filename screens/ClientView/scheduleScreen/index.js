@@ -4,12 +4,12 @@ import React from 'react'
 
 
 
-const MyCalender = ({ navigation }) => {
+const Schedule = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Pressable onPress={() =>navigation.goBack()}>
+                <Pressable>
                     <Image
                         // @ts-ignore
                         source={require("./assets/back.png")}
@@ -18,13 +18,7 @@ const MyCalender = ({ navigation }) => {
                 </Pressable>
 
                 <Text style={[styles.headingText]}>Schedule</Text>
-                <Pressable onPress={() =>navigation.navigate("doctorNotificationsScreen")}>
-                    <Image
-                        // @ts-ignore
-                        source={require("./assets/bell.png")}
-                        style={styles.bell}
-                    />
-                </Pressable>
+                <Text />
             </View>
             <View style={styles.topWrapper}>
                 <View style={styles.topContainer}>
@@ -69,7 +63,7 @@ const MyCalender = ({ navigation }) => {
             </View>
 
             <View style={[styles.headingContainer, styles.topsec]}>
-                <Text style={styles.title}>Schedule/Available time</Text>
+                <Text style={styles.title}>Schedule</Text>
                 <Text style={styles.subTitle}></Text>
             </View>
 
@@ -88,9 +82,9 @@ const MyCalender = ({ navigation }) => {
                         "./assets/progress.png")} style={styles.progress} />
                     <View style={[styles.leftSection, { height: 540 }]}>
                         <View style={styles.docContainer}>
-                            <Text style={styles.titleText}>Sara Smith</Text>
+                            <Text style={styles.titleText}>Tara Tomphson</Text>
                             <View style={styles.inner}>
-                                <Text style={styles.descr}>Electrocardiogram (ECG) </Text>
+                                <Text style={styles.descr}>Nuclear cardiac stress test</Text>
                                 <Image source={require(
                                     // @ts-ignore
                                     "./assets/check.png")} style={styles.check} />
@@ -107,34 +101,50 @@ const MyCalender = ({ navigation }) => {
                             </View>
                         </View>
                         <View style={[styles.docContainer, { backgroundColor: "#EFF3FC" }]}>
-                            <Text style={styles.titleText}>Loyd Smith</Text>
+                            <Text style={styles.titleText}>Tara Tomphson</Text>
                             <View style={styles.inner}>
-                                <Text style={styles.descr}>Magnetic resonance imaging</Text>
+                                <Text style={styles.descr}>Nuclear cardiac stress test</Text>
                                 <Image source={require(
                                     // @ts-ignore
                                     "./assets/check.png")} style={styles.check} />
                             </View>
                         </View>
                         <View style={[styles.docContainer, { backgroundColor: "#12D790" }]}>
-                            <Text style={[styles.titleText, { color: "#fff" }]}>Free slot</Text>
-                            <Text style={[styles.descr, { color: "#fff" }]}>Available time </Text>
+                            <Text style={[styles.titleText, { color: "#fff" }]}>Tara Tomphson</Text>
+                            <Text style={[styles.descr, { color: "#fff" }]}>Nuclear cardiac stress test</Text>
                         </View>
                         <View style={[styles.docContainer, { backgroundColor: "#12D790" }]}>
-                            <Text style={[styles.titleText, { color: "#fff" }]}>Free slot</Text>
-                            <Text style={[styles.descr, { color: "#fff" }]}>Available time </Text>
+                            <Text style={[styles.titleText, { color: "#fff" }]}>Tara Tomphson</Text>
+                            <Text style={[styles.descr, { color: "#fff" }]}>Nuclear cardiac stress test</Text>
                         </View>
                         <View style={[styles.docContainer, { backgroundColor: "#12D790" }]}>
-                            <Text style={[styles.titleText, { color: "#fff" }]}>Free slot</Text>
-                            <Text style={[styles.descr, { color: "#fff" }]}>Available time </Text>
+                            <Text style={[styles.titleText, { color: "#fff" }]}>Tara Tomphson</Text>
+                            <Text style={[styles.descr, { color: "#fff" }]}>Nuclear cardiac stress test</Text>
                         </View>
                     </View>
                 </View>
             </ScrollView>
+            <View style={styles.footer}>
+                <Footer
+                    images={[
+                        // @ts-ignore
+                        require("./assets/home.png"),
+                        // @ts-ignore
+                        require("./assets/calender.png"),
+                        // @ts-ignore
+                        require("./assets/fsearch.png"),
+                        // @ts-ignore
+                        require("./assets/user.png")
+                    ]}
+                    routes={['home', 'schedule', 'search', 'clientProfile']}
+                    navigation={navigation}
+                />
+            </View>
         </View>
     )
 }
 
-export default MyCalender;
+export default Schedule;
 
 const styles = StyleSheet.create({
     container: {
@@ -150,7 +160,6 @@ const styles = StyleSheet.create({
     },
     back: { width: 11.25, height: 20, marginLeft: -15 },
     message: { width: 18, height: 18, resizeMode: "contain" },
-    bell: { width: 20, height: 20, resizeMode: "contain" },
     search: { width: 20, height: 15, resizeMode: "contain" },
     heading: { color: "#fff", fontWeight: 'bold', fontSize: 18, paddingLeft: 10, paddingBottom: 15, lineHeight: 23 },
     headingText: { color: "#1E2022", fontWeight: 'bold', fontSize: 18, },
@@ -168,7 +177,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 10,
         marginTop: 10,
-        paddingBottom: 20,
+        marginBottom: 65,
         backgroundColor: "#fff",
         paddingVertical: 10,
     },
@@ -206,6 +215,13 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#828586",
     },
+    footer: {
+        position: 'absolute',
+        flex: 0.1,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
     prev: {
         height: 16, width: 16, resizeMode: 'contain',
     },
@@ -237,3 +253,58 @@ const styles = StyleSheet.create({
     topWrapper: { backgroundColor: "#fff", paddingHorizontal: 10 },
     color: { color: "#fff" }
 })
+
+
+const Footer = props => {
+
+    return (
+        <View style={[footerStyles.footer]}>
+            {props.images.map((image, index) => (
+                <Pressable style={footerStyles.footerItem} key={index} onPress={() =>  props.navigation.reset({
+                    index: 0,
+                    routes: [{ name: props.routes[index] }]
+                  })}>
+                    <Image
+                        style={footerStyles.footerImage}
+                        source={image}
+                    />
+                </Pressable>
+            ))}
+        </View>
+    );
+};
+
+const footerStyles = StyleSheet.create({
+    footer: {
+        height: 60,
+        backgroundColor: "#FFF",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 40,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 12,
+        },
+        shadowOpacity: 0.58,
+        shadowRadius: 16.00,
+
+        elevation: 24,
+    },
+    footerItem: {
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%"
+    },
+    footerItemText: {
+        fontSize: 13,
+        color: "#fff",
+        marginTop: 5
+    },
+    footerImage: {
+        width: 20,
+        height: 20,
+        resizeMode: "contain"
+    }
+});

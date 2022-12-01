@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Pressable, Image, TextInput, ScrollView } from 'react-native'
 import React, { useState } from 'react'
+import moment from 'moment'
 
 const AppointmentDetails = ({ selectedAppointment, setModalVisible }) => {
     // @ts-ignore
@@ -8,6 +9,9 @@ const AppointmentDetails = ({ selectedAppointment, setModalVisible }) => {
         gender: "Male",
         notes: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Libero, faucibus aliquet hac proin in. Turpis iaculis nulla ultrices tincidunt. Velit leo facilisi feugiat eleifend. Viverra id pharetra quam egestas orci. Metus, ipsum libero, tempor, vel posuere. Aliquet lacus at sit nisl."
     })
+   const start_time = moment(selectedAppointment.start_time, 'HH:mm:ss').format('HH:mm')
+   const end_time = moment(selectedAppointment.end_time, 'HH:mm:ss').format('HH:mm')
+
 
     return (
         <View style={styles.modalView}>
@@ -75,8 +79,8 @@ const AppointmentDetails = ({ selectedAppointment, setModalVisible }) => {
                 </View>
 
                 <View style={[styles.inner, { marginVertical: 10 }]}>
-                    <Text style={styles.text}>{selectedAppointment?.start_time.substr(0,5)} am</Text>
-                    <Text style={styles.text}>{selectedAppointment?.end_time.substr(0,5)} am</Text>
+                    <Text style={styles.text}>{start_time} am</Text>
+                    <Text style={styles.text}>{end_time} am</Text>
                 </View>
 
                 <View style={styles.cardInfo}>

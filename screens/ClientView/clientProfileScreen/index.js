@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { Switch } from 'react-native';
 import { ImageBackground } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { getClientProfile } from '../../store';
+import { getClientProfile } from '../../../store';
 import { unwrapResult } from '@reduxjs/toolkit';
 
-const Profile = ({ navigation }) => {
+const ClientProfile = ({ navigation }) => {
     const dispatch = useDispatch();
     const [isEnabled, setIsEnabled] = useState(true);
     const [client, setClient] = useState([]);
@@ -63,7 +63,7 @@ const Profile = ({ navigation }) => {
                 <View style={styles.cardInfo}>
                     <View style={[styles.headingContainer, { paddingHorizontal: 5 }]}>
                         <Text style={styles.title}>My appointments</Text>
-                        <Pressable onPress={() =>navigation.navigate("myAppointmentsScreen")}>
+                        <Pressable onPress={() =>navigation.navigate("myAppointments")}>
                         <Text style={styles.subTitle}>View now</Text>
                         </Pressable>
                     </View>
@@ -133,7 +133,7 @@ const Profile = ({ navigation }) => {
                         // @ts-ignore
                         require("./assets/user.png")
                     ]}
-                    routes={['homeScreen', 'scheduleScreen', 'searchScreen', 'patientProfileScreen']}
+                    routes={['home', 'schedule', 'search', 'clientProfile']}
                     navigation={navigation}
                 />
             </View>
@@ -141,7 +141,7 @@ const Profile = ({ navigation }) => {
     );
 };
 
-export default Profile;
+export default ClientProfile;
 
 const styles = StyleSheet.create({
     container: {
@@ -333,7 +333,10 @@ const Footer = props => {
     return (
         <View style={[footerStyles.footer]}>
             {props.images.map((image, index) => (
-                <Pressable style={footerStyles.footerItem} key={index} onPress={() => props.navigation.navigate(props.routes[index])}>
+                <Pressable style={footerStyles.footerItem} key={index} onPress={() =>  props.navigation.reset({
+                    index: 0,
+                    routes: [{ name: props.routes[index] }]
+                  })}>
                     <Image
                         style={footerStyles.footerImage}
                         source={image}

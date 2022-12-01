@@ -65,7 +65,7 @@ export const Button = props => (
 
 
 
-const onFacebookConnect = async (dispatch, navigation) => {
+const onFacebookConnect = async (dispatch, navigation, setErrorResponse) => {
   try {
     const fbResult = await LoginManager.logInWithPermissions([
       "public_profile",
@@ -81,14 +81,17 @@ const onFacebookConnect = async (dispatch, navigation) => {
             // setItem('token', res.key)
             navigation.navigate(HOME_SCREEN_NAME);
           }
-        });
+        }).catch((err) => setErrorResponse(errorResponse => [...errorResponse, err]));
     }
   } catch (err) {
-    console.log("Facebook Login Failed: ", JSON.stringify(err));
+    setErrorResponse(errorResponse => [
+      ...errorResponse,
+      { error: "The user canceled the signin request." }
+    ])
   }
 };
 
-const onGoogleConnect = async (dispatch, navigation) => {
+const onGoogleConnect = async (dispatch, navigation, setErrorResponse) => {
   GoogleSignin.configure({
     webClientId: GOOGLE_WEB_CLIENT_ID, // client ID of type WEB for your server
     offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
@@ -107,15 +110,18 @@ const onGoogleConnect = async (dispatch, navigation) => {
           await setItem('token', res.key)
           navigation.navigate(HOME_SCREEN_NAME);
         }
-      });
+      }).catch((err) => {setErrorResponse(errorResponse => [...errorResponse, err])});
   } catch (err) {
     if (err.code === statusCodes.SIGN_IN_CANCELLED) {
-      Alert.alert("Error", "The user canceled the signin request.");
+      setErrorResponse(errorResponse => [
+        ...errorResponse,
+        { error: "The user canceled the signin request." }
+      ])
     }
   }
 };
 
-const onAppleConnect = async (dispatch, navigation) => {
+const onAppleConnect = async (dispatch, navigation, setErrorResponse) => {
   try {
     const signinFunction = Platform.select({
       ios: appleForiOS,
@@ -133,9 +139,14 @@ const onAppleConnect = async (dispatch, navigation) => {
           // setItem('token', res.key)
           navigation.navigate(HOME_SCREEN_NAME);
         }
-      });
+      }).catch((err) => setErrorResponse(errorResponse => [...errorResponse, err]));
   } catch (err) {
-    console.log(JSON.stringify(err));
+    if (err.code === statusCodes.SIGN_IN_CANCELLED) {
+      setErrorResponse(errorResponse => [
+        ...errorResponse,
+        { error: "The user canceled the signin request." }
+      ])
+    }
   }
 };
 
@@ -148,6 +159,7 @@ export const SignIn = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [apiError, setApiError] = useState([])
+  const [errorResponse, setErrorResponse] = useState([])
   const [isCheck, setIsCheck] = useState(false);
   const [secureTextEntryPassword, setSecureTextEntryPassword] = useState(true);
 
@@ -186,9 +198,9 @@ export const SignIn = ({ navigation }) => {
           await setItem('token', res.token)
           await setItem('user', JSON.stringify(res?.user))
           if (res.user.user_type == 'client') {
-            navigation.navigate("categoryScreen");
+            navigation.navigate("ClientNavigator");
           } else {
-            navigation.navigate("profileScreen");
+            navigation.navigate("ServiceProviderNavigator");
           }
           setEmail("");
           setPassword("")
@@ -282,13 +294,16 @@ export const SignIn = ({ navigation }) => {
           </Pressable>
         </View>
         <Text style={styles.separatorText}>Or Sign In with</Text>
-        <SocialButton text="Apple" icon={require("../assets/appleIcon.png")} onPress={() => onAppleConnect(dispatch, navigation)} />
-        <SocialButton text="Google" icon={require("../assets/googleIcon.png")} onPress={() => onGoogleConnect(dispatch, navigation)} />
-        <SocialButton
-          text="Facebook"
-          icon={require("../assets/facebookIcon.png")}
-          onPress={() => onFacebookConnect(dispatch, navigation)}
-        />
+        <SocialButton text="Apple" icon={require("../assets/appleIcon.png")} onPress={() => { setErrorResponse([]); onAppleConnect(dispatch, navigation, setErrorResponse) }} />
+        <SocialButton text="Google" icon={require("../assets/googleIcon.png")} onPress={() => { setErrorResponse([]); onGoogleConnect(dispatch, navigation, setErrorResponse) }} />
+        <SocialButton text="Facebook" icon={require("../assets/facebookIcon.png")} onPress={() => { setErrorResponse([]); onFacebookConnect(dispatch, navigation, setErrorResponse) }} />
+        {errorResponse.map((value, index) => (
+          <View key={index}>
+            <Text style={styles.error1}>
+              {value[Object.keys(value)[index]].toString()}
+            </Text>
+          </View>
+        ))}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Don't have an account? </Text>
           <Pressable onPress={() => navigation.navigate("SignUpScreen")}>
@@ -306,6 +321,7 @@ export const SignUp = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [apiError, setApiError] = useState([])
+  const [errorResponse, setErrorResponse] = useState([])
   const [isCheck, setIsCheck] = useState(false);
   const [secureTextEntryPassword, setSecureTextEntryPassword] = useState(true);
   const [secureTextEntryConfirmPassword, setSecureTextEntryConfirmPassword] =
@@ -472,13 +488,16 @@ export const SignUp = ({ navigation }) => {
           </Pressable>
         </View>
         <Text style={styles.separatorText}>Or Sign Up with</Text>
-        <SocialButton text="Apple" icon={require("../assets/appleIcon.png")} onPress={() => onAppleConnect(dispatch, navigation)} />
-        <SocialButton text="Google" icon={require("../assets/googleIcon.png")} onPress={() => onGoogleConnect(dispatch, navigation)} />
-        <SocialButton
-          text="Facebook"
-          icon={require("../assets/facebookIcon.png")}
-          onPress={() => onFacebookConnect(dispatch, navigation)}
-        />
+        <SocialButton text="Apple" icon={require("../assets/appleIcon.png")} onPress={() => { setErrorResponse([]); onAppleConnect(dispatch, navigation, setErrorResponse) }} />
+        <SocialButton text="Google" icon={require("../assets/googleIcon.png")} onPress={() => { setErrorResponse([]); onGoogleConnect(dispatch, navigation, setErrorResponse) }} />
+        <SocialButton text="Facebook" icon={require("../assets/facebookIcon.png")} onPress={() => { setErrorResponse([]); onFacebookConnect(dispatch, navigation, setErrorResponse) }} />
+        {errorResponse.map((value, index) => (
+          <View key={index}>
+            <Text style={styles.error1}>
+              {value[Object.keys(value)[index]].toString()}
+            </Text>
+          </View>
+        ))}
         <View style={styles.footer}>
           <Text style={styles.footerText}>I have an account. </Text>
           <Pressable onPress={() => navigation.navigate("LoginScreen")}>

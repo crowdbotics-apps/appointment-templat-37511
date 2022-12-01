@@ -61,7 +61,7 @@ const Search = ({ navigation }) => {
             <ScrollView style={{ marginBottom: 65 }}>
                 {
                     providersList.map((item, index) =>
-                        <Pressable style={styles.walletCard} key={index} onPress={() =>navigation.navigate('doctorProfileScreen', {item})}>
+                        <Pressable style={styles.walletCard} key={index} onPress={() =>navigation.navigate('serviceProviderProfile', {item})}>
                             <View style={styles.walletInner}>
                                 <View style={styles.imgContainer}>
                                     <Image source={{ uri: item?.image }} style={styles.image} />
@@ -98,7 +98,7 @@ const Search = ({ navigation }) => {
                         // @ts-ignore
                         require("./assets/user.png")
                     ]}
-                    routes={['homeScreen', 'scheduleScreen', 'searchScreen', 'patientProfileScreen']}
+                    routes={['home', 'schedule', 'search', 'clientProfile']}
                     navigation={navigation}
                 />
             </View>
@@ -215,7 +215,10 @@ const Footer = props => {
     return (
         <View style={[footerStyles.footer]}>
             {props.images.map((image, index) => (
-                <Pressable style={footerStyles.footerItem} key={index} onPress={() => props.navigation.navigate(props.routes[index])}>
+                <Pressable style={footerStyles.footerItem} key={index} onPress={() =>  props.navigation.reset({
+                    index: 0,
+                    routes: [{ name: props.routes[index] }]
+                  })}>
                     <Image
                         style={footerStyles.footerImage}
                         source={image}

@@ -2,7 +2,7 @@ import { View, StyleSheet, Image, ImageBackground, TouchableOpacity, Pressable, 
 import React, { useEffect, useState } from 'react'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { useDispatch, useSelector } from 'react-redux';
-import { getCategoriesList } from '../../store';
+import { getCategoriesList } from '../../../store';
 const ChooseCategory = ({ navigation }) => {
     const dispatch = useDispatch();
     const [categoriesList, setCategoriesList] = useState([]);
@@ -40,7 +40,10 @@ const ChooseCategory = ({ navigation }) => {
         });
         setCategoriesList(newState);
         setTimeout(() => {
-            navigation.navigate("homeScreen")
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'home' }]
+              })
         }, 500);
     }
 

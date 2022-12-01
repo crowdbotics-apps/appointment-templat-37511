@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Image, Pressable, Dimensions, FlatList, ScrollView, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { getServiceProviderList } from '../../store';
+import { getServiceProviderList } from '../../../store';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -25,8 +25,17 @@ const Home = ({ navigation }) => {
         dispatch(getServiceProviderList())
             .then(unwrapResult).then((res) => {
                 setServiceProviders(res);
+                calculateRating(res)
             }).catch((error) => { console.log("Error: 1", error) })
     }, [])
+
+    const calculateRating = (objArray) =>{
+        var output = []
+        const result = objArray.map(({ review_service_prov }) => review_service_prov)
+        
+    }
+    
+
 
     return (
         <View style={styles.container}>
@@ -73,7 +82,7 @@ const Home = ({ navigation }) => {
             <ScrollView style={{ marginBottom: 65 }}>
                 {
                     serviceProviders.map((item, index) =>
-                        <Pressable style={styles.walletCard} key={index} onPress={() =>navigation.navigate('doctorProfileScreen', {item})}>
+                        <Pressable style={styles.walletCard} key={index} onPress={() =>navigation.navigate('serviceProviderProfile', {item})}>
                             <View style={styles.walletInner}>
                                 <View style={styles.imgContainer}>
                                     <Image source={{ uri:  item.image}} style={styles.image} />
@@ -105,7 +114,7 @@ const Home = ({ navigation }) => {
                         // @ts-ignore
                         require("./assets/user.png")
                     ]}
-                    routes={['homeScreen', 'scheduleScreen', 'searchScreen', 'patientProfileScreen']}
+                    routes={['home', 'schedule', 'search', 'clientProfile']}
                     navigation={navigation}
                 />
             </View>
@@ -211,7 +220,10 @@ const Footer = props => {
     return (
         <View style={[footerStyles.footer]}>
             {props.images.map((image, index) => (
-                <Pressable style={footerStyles.footerItem} key={index} onPress={() => props.navigation.navigate(props.routes[index])}>
+                <Pressable style={footerStyles.footerItem} key={index} onPress={() =>  props.navigation.reset({
+                    index: 0,
+                    routes: [{ name: props.routes[index] }]
+                  })}>
                     <Image
                         style={footerStyles.footerImage}
                         source={image}
@@ -255,7 +267,7 @@ const footerStyles = StyleSheet.create({
 const ExploreItem = ({ event, width, navigation }) => {
     return (
         <View style={[exploreItemStyles.container, { width: width - 120 }]}>
-            <Pressable onPress={() => { navigation.navigate('searchScreen') }}>
+            <Pressable onPress={() => { navigation.navigate('search') }}>
                 <View style={exploreItemStyles.header}>
                     <View style={exploreItemStyles.heading}>
                         <Text style={exploreItemStyles.headingText}>{event.name}</Text>

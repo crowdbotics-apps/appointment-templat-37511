@@ -1,16 +1,21 @@
 import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 
-const DoctorProfile = ({ navigation, route }) => {
+const ServiceProviderProfile = ({ navigation, route }) => {
     const [serviceProvider, setServiceProvider] = useState({});
-
+    const [timePeriod, setTimePeriod] = useState({ opening_time: '', closing_time: '' })
+    
 useEffect(() => {
     if (route?.params.item) {
         const { item } = route.params;
         setServiceProvider(item);
+        const start_time = moment(item.opening_time, 'HH:mm:ss').format('HH:mm')
+        const end_time = moment(item.closing_time, 'HH:mm:ss').format('HH:mm')
+        setTimePeriod({ opening_time: start_time, closing_time: end_time })
       }
   
-}, [])
+}, [route?.params])
 
     return (
         <View style={styles.container}>
@@ -39,7 +44,7 @@ useEffect(() => {
                     </View>
                     <View style={styles.scheduledContainer}>
                         <Text style={styles.dateTitle}>Working Time</Text>
-                        <Text style={styles.time}>{serviceProvider?.available_days ? `${serviceProvider?.available_days[0]} - ${serviceProvider?.available_days[1]}` : ""} ( {serviceProvider?.opening_time}AM - {serviceProvider?.closing_time}PM)</Text>
+                        <Text style={styles.time}>{serviceProvider?.available_days ? `${serviceProvider?.available_days[0]} - ${serviceProvider?.available_days[1]}` : ""} ( {timePeriod?.opening_time}AM - {timePeriod?.closing_time}PM)</Text>
                     </View>
                 </View>
                 <View style={styles.headingContainer}>
@@ -63,7 +68,7 @@ useEffect(() => {
                 </View>
                 <View style={styles.buttonBottom}>
                     <Button
-                        onPress={() => navigation.navigate('appointmentScreen')}
+                        onPress={() => navigation.navigate('appointment')}
                         buttonText="Book Appointment"
                         backgroundColor={'#12D790'}
                     />
@@ -81,7 +86,7 @@ useEffect(() => {
                         // @ts-ignore
                         require('./assets/user.png')
                     ]}
-                    routes={['homeScreen', 'scheduleScreen', 'searchScreen', 'patientProfileScreen']}
+                    routes={['home', 'schedule', 'search', 'clientProfile']}
                     navigation={navigation}
                 />
             </View>
@@ -89,7 +94,7 @@ useEffect(() => {
     );
 };
 
-export default DoctorProfile;
+export default ServiceProviderProfile;
 
 const styles = StyleSheet.create({
     container: {
@@ -217,7 +222,10 @@ const Footer = (props) => {
                 <Pressable
                     style={footerStyles.footerItem}
                     key={index}
-                    onPress={() => props.navigation.navigate(props.routes[index])}
+                    onPress={() => props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: props.routes[index] }]
+                      })}
                 >
                     <Image style={footerStyles.footerImage} source={image} />
                 </Pressable>
