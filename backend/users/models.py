@@ -19,7 +19,7 @@ class User(AbstractUser):
     """
     USER_TYPE = [
         ('professional', 'Professional'),
-        ('client', 'Client')
+        ('clients', 'Client')
     ]
 
     # First Name and Last Name do not cover name patterns

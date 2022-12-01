@@ -87,6 +87,8 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'drf_yasg',
     'storages',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.apple',
 ]
 MODULES_APPS = get_modules()
 
@@ -213,8 +215,10 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
 # Custom user model
 AUTH_USER_MODEL = "users.User"
 
@@ -270,6 +274,8 @@ def google_service_account_config():
         return json.loads(base64.b64decode(service_account_config))
     except (binascii.Error, ValueError):
         return {}
+
+
 GOOGLE_SERVICE_ACCOUNT_CONFIG = google_service_account_config()
 if GOOGLE_SERVICE_ACCOUNT_CONFIG:
     GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GOOGLE_SERVICE_ACCOUNT_CONFIG)

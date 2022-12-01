@@ -2,10 +2,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { api } from './apis';
 
-export const getAppointmentList = createAsyncThunk('appointment/getAppointmentList', async (payload) => {
-	const response = await api.getAppointmentList();
-	return response.data;
-});
+export const getAppointmentList = createAsyncThunk(
+	'appointment/getAppointmentList',
+	async (payload, {rejectWithValue}) => {
+		try {
+			const response = await api.getAppointmentList();
+			return response.data;
+
+		} catch (error) {
+			return rejectWithValue(error.response.data)
+		}
+
+	});
 
 export const createAppointment = createAsyncThunk('appointment/createAppointment', async (payload) => {
 	const response = await api.createAppointment(payload);
@@ -42,22 +50,36 @@ export const getMeetingInfo = createAsyncThunk(
 		try {
 			const response = await api.getMeetingInfo();
 			return response.data;
-	
+ 
 		} catch (error) {
 			return rejectWithValue(error.response.data)
 		}
-	
+ 
 });
 
-export const getCountry = createAsyncThunk('appointment/getCountry', async (country) => {
-	const response = await api.getCountry(country);
-	return response.data;
-});
+export const getClientProfile = createAsyncThunk(
+	'appointment/getClientProfile',
+	async (payload, { rejectWithValue }) => {
+		try {
+			const response = await api.getClientProfile();
+			return response.data;
 
-export const getUserInfo = createAsyncThunk('appointment/getUserInfo', async (payload) => {
-	const response = await api.getUserInfo();
-	return response.data;
-});
+		} catch (error) {
+			return rejectWithValue(error.response.data)
+		}
+	});
+
+export const getServiceProviderProfile = createAsyncThunk(
+	'appointment/getServiceProviderProfile',
+	async (payload, { rejectWithValue }) => {
+		try {
+			const response = await api.getServiceProviderProfile();
+			return response.data;
+
+		} catch (error) {
+			return rejectWithValue(error.response.data)
+		}
+	});
 
 export const getOrderList = createAsyncThunk('appointment/getOrderList', async (payload) => {
 	const response = await api.getOrderList();
@@ -65,12 +87,13 @@ export const getOrderList = createAsyncThunk('appointment/getOrderList', async (
 });
 
 const initialState = {
-	service_providers: [],
+	appointment_list: [],
+	service_providers_list: [],
 	categories: [],
 	meeting_info: [],
 	myBasket: [],
-	country: '',
-	orderList: [],
+	client: [],
+	service_provider: [],
 	user: null,
 	api: {
 		loading: 'idle',
@@ -89,7 +112,7 @@ const appointmentSlice = createSlice({
 			}
 		},
 		[getAppointmentList.fulfilled]: (state, action) => {
-			state.products = action.payload;
+			state.appointment_list = action.payload;
 			state.api.loading = 'idle';
 		},
 		[getAppointmentList.rejected]: (state, action) => {
@@ -137,7 +160,7 @@ const appointmentSlice = createSlice({
 			}
 		},
 		[getServiceProviderList.fulfilled]: (state, action) => {
-			state.service_providers = action.payload;
+			state.service_providers_list = action.payload;
 			state.api.loading = 'idle';
 		},
 		[getServiceProviderList.rejected]: (state, action) => {
@@ -163,32 +186,32 @@ const appointmentSlice = createSlice({
 			}
 		},
 
-		[getCountry.pending]: (state) => {
+		[getClientProfile.pending]: (state) => {
 			if (state.api.loading === 'idle') {
 				state.api.loading = 'pending';
 			}
 		},
-		[getCountry.fulfilled]: (state, action) => {
-			state.country = action.payload;
+		[getClientProfile.fulfilled]: (state, action) => {
+			state.client = action.payload;
 			state.api.loading = 'idle';
 		},
-		[getCountry.rejected]: (state, action) => {
+		[getClientProfile.rejected]: (state, action) => {
 			if (state.api.loading === 'pending') {
 				state.api.error = action.error;
 				state.api.loading = 'idle';
 			}
 		},
 
-		[getUserInfo.pending]: (state) => {
+		[getServiceProviderProfile.pending]: (state) => {
 			if (state.api.loading === 'idle') {
 				state.api.loading = 'pending';
 			}
 		},
-		[getUserInfo.fulfilled]: (state, action) => {
-			state.user = action.payload;
+		[getServiceProviderProfile.fulfilled]: (state, action) => {
+			state.service_provider = action.payload;
 			state.api.loading = 'idle';
 		},
-		[getUserInfo.rejected]: (state, action) => {
+		[getServiceProviderProfile.rejected]: (state, action) => {
 			if (state.api.loading === 'pending') {
 				state.api.error = action.error;
 				state.api.loading = 'idle';

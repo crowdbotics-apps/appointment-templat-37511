@@ -9,6 +9,7 @@ import {
   combineReducers
 } from "@reduxjs/toolkit"
 import appointmentReducer from './store';
+import RootNavigator from "./screens/RootNavigator"
 import { screens } from "@screens"
 import { modules, reducers, hooks, initialRoute } from "@modules"
 import { connectors } from "@store"
@@ -79,7 +80,9 @@ const App = () => {
 
   return (
     <Provider store={store}>
-      <Navigation />
+      <NavigationContainer>
+          <RootNavigator />
+        </NavigationContainer>
     </Provider>
   )
 }
