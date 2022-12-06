@@ -1,23 +1,23 @@
 import React from "react";
-import {
-  Text, StyleSheet, View, Image, TouchableOpacity
-} from "react-native";
+import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 
-const Welcome = ({navigation}) => {
-  return (
-    <View style={styles.container}>
-      <Image
-        style={styles.background}
-        // @ts-ignore
-        source={require("./assets/welcome.png")}
-      />
+const Welcome = ({
+  navigation
+}) => {
+  return <View style={styles.container}>
+      <Image style={styles.background} // @ts-ignore
+    source={require("./assets/welcome.png")} />
       <View style={styles.buttonBottom}>
-        <Button onPress={() => navigation.navigate("login", { route: "SignUpScreen" })} buttonText="Sign Up" />
-        <Button backgroundColor="#fff" color="#000" onPress={() => navigation.navigate("login", { route: "LoginScreen" })} buttonText="Login" />
+        <Button onPress={() => navigation.navigate("login", {
+        route: "SignUpScreen"
+      })} buttonText="Sign Up" />
+        <Button backgroundColor="#fff" color="#000" onPress={() => navigation.navigate("login", {
+        route: "LoginScreen"
+      })} buttonText="Login" />
       </View>
-    </View>
-  );
+    </View>;
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -39,33 +39,26 @@ const styles = StyleSheet.create({
     width: 370,
     height: 320,
     left: '15%',
-    resizeMode: "contain",
+    resizeMode: "contain"
   }
 });
-
 export default Welcome;
 
-
-const Button = (props) => {
-  return (
-    <TouchableOpacity onPress={props.onPress} underlayColor="#DDDDDD">
-      <View
-        style={[
-          btnStyles.button,
-          {
-            backgroundColor: props.backgroundColor ? props.backgroundColor : "#000000",
-            height: props.height ? props.height : 49,
-            borderWidth: props.borderWidth ? props.borderWidth : 0,
-            borderColor: props.borderColor ? props.borderColor : "#000000"
-          }
-        ]}
-      >
-        <Text style={[btnStyles.text, { color: props.color ? props.color : "#ffffff" }]}>
+const Button = props => {
+  return <TouchableOpacity onPress={props.onPress} underlayColor="#DDDDDD">
+      <View style={[btnStyles.button, {
+      backgroundColor: props.backgroundColor ? props.backgroundColor : "#000000",
+      height: props.height ? props.height : 49,
+      borderWidth: props.borderWidth ? props.borderWidth : 0,
+      borderColor: props.borderColor ? props.borderColor : "#000000"
+    }]}>
+        <Text style={[btnStyles.text, {
+        color: props.color ? props.color : "#ffffff"
+      }]}>
           {props.buttonText}
         </Text>
       </View>
-    </TouchableOpacity>
-  );
+    </TouchableOpacity>;
 };
 
 const btnStyles = StyleSheet.create({

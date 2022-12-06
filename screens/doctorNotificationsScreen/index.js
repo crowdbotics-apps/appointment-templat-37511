@@ -1,96 +1,72 @@
 import React, { useEffect, useState } from "react";
-import {
-  // @ts-ignore
-  Text, StyleSheet, View, Image, ScrollView, Pressable
-} from "react-native";
+import { // @ts-ignore
+Text, StyleSheet, View, Image, ScrollView } from "react-native";
 
-const Notifications = ({ navigation }) => {
+const Notifications = ({
+  navigation
+}) => {
   const [notifications, setNotifications] = useState([]);
   useEffect(() => {
-    setNotifications([
-      {
-        id: 1,
-        type: "alarm",
-        title: "Reminder for Alarm",
-        description: "Your Reminder Appointment will be Start After 15 Minutes, Stay with App",
-        time: "10:00AM",
-
-      },
-      {
-        id: 2,
-        type: "reminder",
-        title: "Reminder for Appointment",
-        description: "Your Reminder Appointment will be Notification Send.",
-        time: "11:00AM",
-      },
-      {
-        id: 3,
-        type: "appointment",
-        title: "Appointment Confirmed",
-        description: "Your Appointment Confirmed. Dr. Sara Smith Call will be Held at 10:30 AM - 24 Dec",
-        time: "12:00PM",
-      }
-
-    ])
-  }, [])
-
-
-  return (
-    <View style={styles.container}>
+    setNotifications([{
+      id: 1,
+      type: "alarm",
+      title: "Reminder for Alarm",
+      description: "Your Reminder Appointment will be Start After 15 Minutes, Stay with App",
+      time: "10:00AM"
+    }, {
+      id: 2,
+      type: "reminder",
+      title: "Reminder for Appointment",
+      description: "Your Reminder Appointment will be Notification Send.",
+      time: "11:00AM"
+    }, {
+      id: 3,
+      type: "appointment",
+      title: "Appointment Confirmed",
+      description: "Your Appointment Confirmed. Dr. Sara Smith Call will be Held at 10:30 AM - 24 Dec",
+      time: "12:00PM"
+    }]);
+  }, []);
+  return <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Image
-          // @ts-ignore
-          source={require("./assets/back.png")}
-          style={styles.back}
-        />
+        <Image // @ts-ignore
+      source={require("./assets/back.png")} style={styles.back} />
         <View style={styles.headingContainer}>
           <Text style={styles.title}>Notifications</Text>
-          <Image source={require(
-            // @ts-ignore
-            "./assets/notification.png")} style={styles.notification} />
+          <Image source={require( // @ts-ignore
+        "./assets/notification.png")} style={styles.notification} />
         </View>
 
         <Text style={styles.heading}>Today Jun 23:</Text>
-        {
-          notifications.map((notification, index) =>
-            <View style={styles.listContainer} key={index}>
+        {notifications.map((notification, index) => <View style={styles.listContainer} key={index}>
               <Text style={styles.timeText}>{notification.time}</Text>
               <View style={styles.walletCard}>
-                <Image source={notification.type == 'alarm' ?
-                  // @ts-ignore
-                  require("./assets/alarm.png") : notification.type == 'reminder' ? require("./assets/reminder.png") : require("./assets/appointment.png")} style={styles.image} />
+                <Image source={notification.type == 'alarm' ? // @ts-ignore
+          require("./assets/alarm.png") : notification.type == 'reminder' ? require("./assets/reminder.png") : require("./assets/appointment.png")} style={styles.image} />
                 <View style={styles.walletCarder}>
                   <Text style={styles.eventName}>{notification.title}</Text>
                   <Text style={styles.eventType}>{notification.description}</Text>
                 </View>
               </View>
-            </View>
-          )
-        }
+            </View>)}
         <View style={styles.prevContainer}>
           <Text style={[styles.heading]}>Yesterday Jun 22:</Text>
-          {
-            notifications.map((notification, index) =>
-              index < 2 &&
-              <View style={[styles.listContainer]} key={index}>
+          {notifications.map((notification, index) => index < 2 && <View style={[styles.listContainer]} key={index}>
                 <Text style={styles.timeText}>{notification.time}</Text>
                 <View style={styles.walletCard}>
-                  <Image source={notification.type == 'alarm' ? require(
-                    // @ts-ignore
-                    "./assets/alarm.png") : notification.type == 'reminder' ? require("./assets/reminder.png") : require("./assets/appointment.png")} style={styles.image} />
+                  <Image source={notification.type == 'alarm' ? require( // @ts-ignore
+            "./assets/alarm.png") : notification.type == 'reminder' ? require("./assets/reminder.png") : require("./assets/appointment.png")} style={styles.image} />
                   <View style={styles.walletCarder}>
                     <Text style={styles.eventName}>{notification.title}</Text>
                     <Text style={styles.eventType}>{notification.description}</Text>
                   </View>
                 </View>
-              </View>
-            )
-          }
+              </View>)}
         </View>
       </ScrollView>
-    </View>
-  );
+    </View>;
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -131,7 +107,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     fontWeight: "bold"
   },
-
   timeText: {
     fontSize: 12,
     color: "#000",
@@ -151,7 +126,13 @@ const styles = StyleSheet.create({
     width: 20,
     resizeMode: "contain"
   },
-  back: { height: 18, width: 18, resizeMode: "contain", marginTop: 20, marginBottom: 10 },
+  back: {
+    height: 18,
+    width: 18,
+    resizeMode: "contain",
+    marginTop: 20,
+    marginBottom: 10
+  },
   headingContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -159,13 +140,25 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     marginVertical: 15
   },
-  title: { fontSize: 16, fontWeight: 'bold', color: "#1E2022" },
-  subTitle: { fontSize: 12, fontWeight: 'bold', color: "#1E2022" },
-  heading: { fontSize: 15, fontWeight: 'bold', color: "#354259", marginVertical: 5 },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: "#1E2022"
+  },
+  subTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: "#1E2022"
+  },
+  heading: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: "#354259",
+    marginVertical: 5
+  },
   prevContainer: {
     marginTop: 10,
     paddingBottom: 70
   }
 });
-
 export default Notifications;

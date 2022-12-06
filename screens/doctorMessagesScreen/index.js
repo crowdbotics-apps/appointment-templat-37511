@@ -1,61 +1,46 @@
 import React, { useEffect, useState } from "react";
-import {
-  Text, StyleSheet, View, Image, ScrollView, Pressable
-} from "react-native";
+import { Text, StyleSheet, View, Image, ScrollView } from "react-native";
 
-const Messages = ({ navigation }) => {
+const Messages = ({
+  navigation
+}) => {
   const [messages, setMessages] = useState([]);
   useEffect(() => {
-    setMessages([
-      {
-        id: 1,
-        title: "Sara Smith",
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac integer vulputate ac adipiscing in non vitae.",
-        time: "10:00AM",
-        // @ts-ignore
-        image: require("./assets/profile1.png")
-
-      },
-      {
-        id: 2,
-        title: "Esther Howard",
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vel, auctor non pellentesque id vestibulum. ",
-        time: "11:00AM",
-        // @ts-ignore
-        image: require("./assets/profile2.png")
-      },
-      {
-        id: 3,
-        title: "Brooklyn Simmons",
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat at est in elit cum netus sapien id arcu.",
-        time: "12:00PM",
-        // @ts-ignore
-        image: require("./assets/profile3.png")
-      }
-
-    ])
-  }, [])
-
-
-  return (
-    <View style={styles.container}>
+    setMessages([{
+      id: 1,
+      title: "Sara Smith",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac integer vulputate ac adipiscing in non vitae.",
+      time: "10:00AM",
+      // @ts-ignore
+      image: require("./assets/profile1.png")
+    }, {
+      id: 2,
+      title: "Esther Howard",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vel, auctor non pellentesque id vestibulum. ",
+      time: "11:00AM",
+      // @ts-ignore
+      image: require("./assets/profile2.png")
+    }, {
+      id: 3,
+      title: "Brooklyn Simmons",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat at est in elit cum netus sapien id arcu.",
+      time: "12:00PM",
+      // @ts-ignore
+      image: require("./assets/profile3.png")
+    }]);
+  }, []);
+  return <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Image
-          // @ts-ignore
-          source={require("./assets/back.png")}
-          style={styles.back}
-        />
+        <Image // @ts-ignore
+      source={require("./assets/back.png")} style={styles.back} />
         <View style={styles.headingContainer}>
           <Text style={styles.title}>Patients message</Text>
-          <Image source={require(
-            // @ts-ignore
-            "./assets/message.png")} style={styles.notification} />
+          <Image source={require( // @ts-ignore
+        "./assets/message.png")} style={styles.notification} />
         </View>
 
         <Text style={styles.heading}>Today Jun 23:</Text>
-        {
-          messages.map((notification, index) =>
-            <View style={styles.listContainer} key={index}>
+        {messages.map((notification, index) => <View style={styles.listContainer} key={index}>
               <Text style={styles.timeText}>{notification.time}</Text>
               <View style={styles.walletCard}>
                 <Image source={notification.image} style={styles.image} />
@@ -64,15 +49,10 @@ const Messages = ({ navigation }) => {
                   <Text style={styles.eventType}>{notification.description}</Text>
                 </View>
               </View>
-            </View>
-          )
-        }
+            </View>)}
         <View style={styles.prevContainer}>
           <Text style={[styles.heading]}>Yesterday Jun 22:</Text>
-          {
-            messages.map((notification, index) =>
-              index < 2 &&
-              <View style={[styles.listContainer]} key={index}>
+          {messages.map((notification, index) => index < 2 && <View style={[styles.listContainer]} key={index}>
                 <Text style={styles.timeText}>{notification.time}</Text>
                 <View style={styles.walletCard}>
                   <Image source={notification.image} style={styles.image} />
@@ -81,14 +61,12 @@ const Messages = ({ navigation }) => {
                     <Text style={styles.eventType}>{notification.description}</Text>
                   </View>
                 </View>
-              </View>
-            )
-          }
+              </View>)}
         </View>
       </ScrollView>
-    </View>
-  );
+    </View>;
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -129,7 +107,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     fontWeight: "bold"
   },
-
   timeText: {
     fontSize: 12,
     color: "#000",
@@ -149,7 +126,13 @@ const styles = StyleSheet.create({
     width: 20,
     resizeMode: "contain"
   },
-  back: { height: 18, width: 18, resizeMode: "contain", marginTop: 20, marginBottom: 10 },
+  back: {
+    height: 18,
+    width: 18,
+    resizeMode: "contain",
+    marginTop: 20,
+    marginBottom: 10
+  },
   headingContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -157,13 +140,25 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     marginVertical: 15
   },
-  title: { fontSize: 16, fontWeight: 'bold', color: "#1E2022" },
-  subTitle: { fontSize: 12, fontWeight: 'bold', color: "#1E2022" },
-  heading: { fontSize: 15, fontWeight: 'bold', color: "#354259", marginVertical: 5 },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: "#1E2022"
+  },
+  subTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: "#1E2022"
+  },
+  heading: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: "#354259",
+    marginVertical: 5
+  },
   prevContainer: {
     marginTop: 10,
     paddingBottom: 70
   }
 });
-
 export default Messages;

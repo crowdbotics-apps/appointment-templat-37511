@@ -1,12 +1,14 @@
-import axios from "axios"
-import { getGlobalOptions } from "@options"
-
+import axios from "axios";
+import { getGlobalOptions } from "@options";
 const global = getGlobalOptions();
 const BASE_URL = global.url; // your app back-end url
 
 const authAPI = axios.create({
   baseURL: BASE_URL,
-  headers: { Accept: "application/json", "Content-Type": "application/json" }
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json"
+  }
 });
 
 function apiLoginRequest(payload) {
@@ -19,13 +21,17 @@ function apiSignupRequest(payload) {
 
 function apiLogoutRequest(payload) {
   return authAPI.post("/rest-auth/logout/", null, {
-    headers: { Authorization: `Token ${payload.token}` }
+    headers: {
+      Authorization: `Token ${payload.token}`
+    }
   });
 }
 
 function apiAuthUserRequest(payload) {
   return authAPI.get("/rest-auth/user/", null, {
-    headers: { Authorization: `Token ${payload.token}` }
+    headers: {
+      Authorization: `Token ${payload.token}`
+    }
   });
 }
 

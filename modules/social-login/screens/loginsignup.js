@@ -1,87 +1,45 @@
-import React, { useState } from "react"
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  ActivityIndicator,
-  Alert,
-  Platform,
-  Pressable
-} from "react-native"
-
-import { useSelector, useDispatch } from "react-redux"
-import { HOME_SCREEN_NAME, validateEmail } from "./constants"
-import { buttonStyles, textInputStyles, Color } from "./styles"
-import {
-  GoogleSignin,
-  statusCodes
-} from "@react-native-google-signin/google-signin"
-import { LoginManager, AccessToken } from "react-native-fbsdk"
-import { GOOGLE_WEB_CLIENT_ID, GOOGLE_IOS_CLIENT_ID } from "../auth/utils"
-import { appleForAndroid, appleForiOS } from "../auth/apple"
-import {
-  loginRequest,
-  signupRequest,
-  facebookLogin,
-  googleLogin,
-  appleLogin
-} from "../auth"
-import { unwrapResult } from "@reduxjs/toolkit"
-// import { setItem } from "../../../utils"
-
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, TextInput, ActivityIndicator, Alert, Platform, Pressable } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { HOME_SCREEN_NAME, validateEmail } from "./constants";
+import { buttonStyles, textInputStyles, Color } from "./styles";
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
+import { LoginManager, AccessToken } from "react-native-fbsdk";
+import { GOOGLE_WEB_CLIENT_ID, GOOGLE_IOS_CLIENT_ID } from "../auth/utils";
+import { appleForAndroid, appleForiOS } from "../auth/apple";
+import { loginRequest, signupRequest, facebookLogin, googleLogin, appleLogin } from "../auth";
+import { unwrapResult } from "@reduxjs/toolkit"; // import { setItem } from "../../../utils"
 // Custom Text Input
-export const TextInputField = props => (
-  <View>
+
+export const TextInputField = props => <View>
     <Text style={[textInputStyles.label, props.labelStyle]}>{props.label}</Text>
-    <TextInput
-      autoCapitalize="none"
-      style={[textInputStyles.textInput, props.textInputStyle]}
-      placeholderTextColor={Color.steel}
-      underlineColorAndroid={"transparent"}
-      {...props}
-    />
+    <TextInput autoCapitalize="none" style={[textInputStyles.textInput, props.textInputStyle]} placeholderTextColor={Color.steel} underlineColorAndroid={"transparent"} {...props} />
     {!!props.error && <Text style={textInputStyles.error}>{props.error}</Text>}
-  </View>
-);
+  </View>; // Custom Button
 
-// Custom Button
-export const Button = props => (
-  <TouchableOpacity onPress={props.onPress} disabled={props.loading}>
+export const Button = props => <TouchableOpacity onPress={props.onPress} disabled={props.loading}>
     <View style={[buttonStyles.viewStyle, props.viewStyle]}>
-      {props.loading ? (
-        <ActivityIndicator
-          color={props.loadingColor ? props.loadingColor : Color.white}
-          style={props.loadingStyle}
-        />
-      ) : (
-        <Text style={[buttonStyles.textStyle, props.textStyle]}>
+      {props.loading ? <ActivityIndicator color={props.loadingColor ? props.loadingColor : Color.white} style={props.loadingStyle} /> : <Text style={[buttonStyles.textStyle, props.textStyle]}>
           {props.title}
-        </Text>
-      )}
+        </Text>}
     </View>
-  </TouchableOpacity>
-);
-
-
+  </TouchableOpacity>;
 
 const onFacebookConnect = async (dispatch, navigation) => {
   try {
-    const fbResult = await LoginManager.logInWithPermissions([
-      "public_profile",
-      "email"
-    ]);
+    const fbResult = await LoginManager.logInWithPermissions(["public_profile", "email"]);
+
     if (!fbResult.isCancelled) {
-      const data = await AccessToken.getCurrentAccessToken();
-      // @ts-ignore
-      dispatch(facebookLogin({ access_token: data.accessToken }))
-        .then(unwrapResult)
-        .then(res => {
-          if (res.key) {
-            // setItem('token', res.key)
-            navigation.navigate(HOME_SCREEN_NAME);
-          }
-        });
+      const data = await AccessToken.getCurrentAccessToken(); // @ts-ignore
+
+      dispatch(facebookLogin({
+        access_token: data.accessToken
+      })).then(unwrapResult).then(res => {
+        if (res.key) {
+          // setItem('token', res.key)
+          navigation.navigate(HOME_SCREEN_NAME);
+        }
+      });
     }
   } catch (err) {
     console.log("Facebook Login Failed: ", JSON.stringify(err));
@@ -90,24 +48,27 @@ const onFacebookConnect = async (dispatch, navigation) => {
 
 const onGoogleConnect = async (dispatch, navigation) => {
   GoogleSignin.configure({
-    webClientId: GOOGLE_WEB_CLIENT_ID, // client ID of type WEB for your server
-    offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+    webClientId: GOOGLE_WEB_CLIENT_ID,
+    // client ID of type WEB for your server
+    offlineAccess: true,
+    // if you want to access Google API on behalf of the user FROM YOUR SERVER
     forceCodeForRefreshToken: false,
     iosClientId: GOOGLE_IOS_CLIENT_ID
   });
+
   try {
     await GoogleSignin.hasPlayServices();
     await GoogleSignin.signIn();
-    const tokens = await GoogleSignin.getTokens();
-    // @ts-ignore
-    dispatch(googleLogin({ access_token: tokens.accessToken }))
-      .then(unwrapResult)
-      .then(async res => {
-        if (res.key) {
-          await setItem('token', res.key)
-          navigation.navigate(HOME_SCREEN_NAME);
-        }
-      });
+    const tokens = await GoogleSignin.getTokens(); // @ts-ignore
+
+    dispatch(googleLogin({
+      access_token: tokens.accessToken
+    })).then(unwrapResult).then(async res => {
+      if (res.key) {
+        await setItem('token', res.key);
+        navigation.navigate(HOME_SCREEN_NAME);
+      }
+    });
   } catch (err) {
     if (err.code === statusCodes.SIGN_IN_CANCELLED) {
       Alert.alert("Error", "The user canceled the signin request.");
@@ -123,46 +84,45 @@ const onAppleConnect = async (dispatch, navigation) => {
       android: appleForAndroid
     });
     const result = await signinFunction();
-    dispatch(
-      // @ts-ignore
-      appleLogin({ id_token: result.id_token, access_token: result.code })
-    )
-      .then(unwrapResult)
-      .then(res => {
-        if (res.key) {
-          // setItem('token', res.key)
-          navigation.navigate(HOME_SCREEN_NAME);
-        }
-      });
+    dispatch( // @ts-ignore
+    appleLogin({
+      id_token: result.id_token,
+      access_token: result.code
+    })).then(unwrapResult).then(res => {
+      if (res.key) {
+        // setItem('token', res.key)
+        navigation.navigate(HOME_SCREEN_NAME);
+      }
+    });
   } catch (err) {
     console.log(JSON.stringify(err));
   }
 };
 
-
-
 import { Image, StyleSheet, ScrollView } from "react-native";
-import { setItem } from "../../../store"
-
-export const SignIn = ({ navigation }) => {
+import { setItem } from "../../../store";
+export const SignIn = ({
+  navigation
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [apiError, setApiError] = useState([])
+  const [apiError, setApiError] = useState([]);
   const [isCheck, setIsCheck] = useState(false);
   const [secureTextEntryPassword, setSecureTextEntryPassword] = useState(true);
-
   const [validationError, setValidationError] = useState({
     email: "",
     password: ""
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // @ts-ignore
 
-  // @ts-ignore
-  const { api } = useSelector(state => state.Login);
+  const {
+    api
+  } = useSelector(state => state.Login);
   const dispatch = useDispatch();
 
   const onSigninPress = async () => {
-    setApiError([])
+    setApiError([]);
+
     if (!validateEmail.test(email)) {
       return setValidationError({
         email: "Please enter a valid email address.",
@@ -175,92 +135,68 @@ export const SignIn = ({ navigation }) => {
         email: "",
         password: "Please enter a valid password"
       });
-    }
+    } // @ts-ignore
 
-    // @ts-ignore
-    setIsLoading(true)
-    dispatch(loginRequest({ username: email, password }))
-      .then(unwrapResult)
-      .then(async res => {
-        if (res.token) {
-          await setItem('token', res.token)
-          await setItem('user', JSON.stringify(res?.user))
-          if (res.user.user_type == 'client') {
-            navigation.navigate("categoryScreen");
-          } else {
-            navigation.navigate("doctorProfileScreen");
-          }
-          setEmail("");
-          setPassword("")
-          setIsLoading(false)
+
+    setIsLoading(true);
+    dispatch(loginRequest({
+      username: email,
+      password
+    })).then(unwrapResult).then(async res => {
+      if (res.token) {
+        await setItem('token', res.token);
+        await setItem('user', JSON.stringify(res?.user));
+
+        if (res.user.user_type == 'client') {
+          navigation.navigate("categoryScreen");
+        } else {
+          navigation.navigate("doctorProfileScreen");
         }
-      })
-      .catch(err => {
-        setIsLoading(false);
-        setApiError(apiError => [...apiError, err]);
-      });
-  };
 
+        setEmail("");
+        setPassword("");
+        setIsLoading(false);
+      }
+    }).catch(err => {
+      setIsLoading(false);
+      setApiError(apiError => [...apiError, err]);
+    });
+  };
 
   const resetValidations = () => {
     return setValidationError({
       email: "",
       password: ""
     });
-  }
+  };
 
-  const handleInputEmail = (value) => {
-    setEmail(value)
-    resetValidations()
-  }
+  const handleInputEmail = value => {
+    setEmail(value);
+    resetValidations();
+  };
 
-  const handleInputPassword = (value) => {
-    setPassword(value)
-    resetValidations()
-  }
-  return (
-    <View style={styles.container}>
+  const handleInputPassword = value => {
+    setPassword(value);
+    resetValidations();
+  };
+
+  return <View style={styles.container}>
       {isLoading && <Loader></Loader>}
-      {/* <Text style={styles.heading}>Signup-2</Text> */}
+      {
+      /* <Text style={styles.heading}>Signup-2</Text> */
+    }
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.heading}>Welcome</Text>
         <Text style={styles.subHeading}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Non at sed.
         </Text>
-        <Input
-          text="Email address"
-          placeholder="Enter your email address"
-          value={email}
-          onChange={handleInputEmail}
-          containerStyle={styles.inputContainer}
-          errorText={validationError.email}
-        />
-        <Input
-          text="Password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={handleInputPassword}
-          containerStyle={styles.inputContainer}
-          secureTextEntry={secureTextEntryPassword}
-          icon={require("../assets/eyeIcon.png")}
-          iconOnPress={() =>
-            setSecureTextEntryPassword(!secureTextEntryPassword)
-          }
-          errorText={validationError.password}
-        />
-        {
-          apiError.map((value, index) =>
-            <View key={index}>
+        <Input text="Email address" placeholder="Enter your email address" value={email} onChange={handleInputEmail} containerStyle={styles.inputContainer} errorText={validationError.email} />
+        <Input text="Password" placeholder="Enter your password" value={password} onChange={handleInputPassword} containerStyle={styles.inputContainer} secureTextEntry={secureTextEntryPassword} icon={require("../assets/eyeIcon.png")} iconOnPress={() => setSecureTextEntryPassword(!secureTextEntryPassword)} errorText={validationError.password} />
+        {apiError.map((value, index) => <View key={index}>
               <Text style={styles.error1}>{value[Object.keys(value)[index]].toString()}</Text>
-            </View>
-          )
-        }
+            </View>)}
         <View style={styles.flexRow}>
-          <Checkbox
-            value={isCheck}
-            setValue={setIsCheck}
-            style={styles.checkbox}
-          />
+          <Checkbox value={isCheck} setValue={setIsCheck} style={styles.checkbox} />
           <Text style={styles.description}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Non at sed.
           </Text>
@@ -268,20 +204,13 @@ export const SignIn = ({ navigation }) => {
         <View style={styles.flexRow}>
           <Button1 buttonText="Login" style={styles.button} onPress={onSigninPress} />
           <Pressable style={styles.fingerprintButton}>
-            <Image
-              source={require("../assets/fingerprintIcon.png")}
-              style={styles.fingerprintIcon}
-            />
+            <Image source={require("../assets/fingerprintIcon.png")} style={styles.fingerprintIcon} />
           </Pressable>
         </View>
         <Text style={styles.separatorText}>Or Sign In with</Text>
         <SocialButton text="Apple" icon={require("../assets/appleIcon.png")} onPress={() => onAppleConnect(dispatch, navigation)} />
         <SocialButton text="Google" icon={require("../assets/googleIcon.png")} onPress={() => onGoogleConnect(dispatch, navigation)} />
-        <SocialButton
-          text="Facebook"
-          icon={require("../assets/facebookIcon.png")}
-          onPress={() => onFacebookConnect(dispatch, navigation)}
-        />
+        <SocialButton text="Facebook" icon={require("../assets/facebookIcon.png")} onPress={() => onFacebookConnect(dispatch, navigation)} />
         <View style={styles.footer}>
           <Text style={styles.footerText}>Don't have an account? </Text>
           <Pressable onPress={() => navigation.navigate("SignUpScreen")}>
@@ -289,44 +218,42 @@ export const SignIn = ({ navigation }) => {
           </Pressable>
         </View>
       </ScrollView>
-    </View>
-  );
+    </View>;
 };
-
 import { RadioButton } from 'react-native-paper';
-export const SignUp = ({ navigation }) => {
+export const SignUp = ({
+  navigation
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [apiError, setApiError] = useState([])
+  const [apiError, setApiError] = useState([]);
   const [isCheck, setIsCheck] = useState(false);
   const [secureTextEntryPassword, setSecureTextEntryPassword] = useState(true);
-  const [secureTextEntryConfirmPassword, setSecureTextEntryConfirmPassword] =
-    useState(true);
+  const [secureTextEntryConfirmPassword, setSecureTextEntryConfirmPassword] = useState(true);
   const [userType, setUserType] = useState('client');
-
   const [validationError, setValidationError] = useState({
     email: "",
     password: ""
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // @ts-ignore
 
-
-  // @ts-ignore
-  const { api } = useSelector(state => state.Login);
+  const {
+    api
+  } = useSelector(state => state.Login);
   const dispatch = useDispatch();
 
   const onSignupPress = async () => {
-    setApiError([])
+    setApiError([]);
+
     if (!validateEmail.test(email)) {
       return setValidationError({
         email: "Please enter a valid email address.",
         password: ""
       });
     } else {
-      setValidationError({
-        ...validationError,
-        email: "",
+      setValidationError({ ...validationError,
+        email: ""
       });
     }
 
@@ -343,20 +270,26 @@ export const SignUp = ({ navigation }) => {
         password: "Confirm password and password do not match."
       });
     }
-    setIsLoading(true)
-    // @ts-ignore
-    dispatch(signupRequest({ email, password, user_type: userType }))
-      .then(unwrapResult)
-      .then(async (res) => {
-        // await setItem('token', res.token)
-        // await setItem('userID', res?.user?.id.toString())
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        setIsLoading(false)
-        navigation.navigate("LoginScreen")
-      })
-      .catch(err => { setApiError(apiError => [...apiError, err]);; setIsLoading(false) });
+
+    setIsLoading(true); // @ts-ignore
+
+    dispatch(signupRequest({
+      email,
+      password,
+      user_type: userType
+    })).then(unwrapResult).then(async res => {
+      // await setItem('token', res.token)
+      // await setItem('userID', res?.user?.id.toString())
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setIsLoading(false);
+      navigation.navigate("LoginScreen");
+    }).catch(err => {
+      setApiError(apiError => [...apiError, err]);
+      ;
+      setIsLoading(false);
+    });
   };
 
   const resetValidations = () => {
@@ -364,93 +297,54 @@ export const SignUp = ({ navigation }) => {
       email: "",
       password: ""
     });
-  }
+  };
 
-  const handleInputEmail = (value) => {
-    setEmail(value)
-    resetValidations()
-  }
+  const handleInputEmail = value => {
+    setEmail(value);
+    resetValidations();
+  };
 
-  const handleInputPassword = (value) => {
-    setPassword(value)
-    resetValidations()
-  }
+  const handleInputPassword = value => {
+    setPassword(value);
+    resetValidations();
+  };
 
-  const handleInputConfirmPassword = (value) => {
-    setConfirmPassword(value)
-    resetValidations()
-  }
+  const handleInputConfirmPassword = value => {
+    setConfirmPassword(value);
+    resetValidations();
+  };
 
-
-  return (
-    <View style={styles.container}>
+  return <View style={styles.container}>
       {isLoading && <Loader></Loader>}
-      {/* <Text style={styles.heading}>Signup-2</Text> */}
+      {
+      /* <Text style={styles.heading}>Signup-2</Text> */
+    }
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.heading}>Welcome</Text>
         <Text style={styles.subHeading}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Non at sed.
         </Text>
-        <Input
-          text="Email address"
-          placeholder="Enter your email address"
-          value={email}
-          onChange={(value) => handleInputEmail(value)}
-          containerStyle={styles.inputContainer}
-          errorText={validationError.email}
-        />
-        <Input
-          text="Password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={(value) => handleInputPassword(value)}
-          containerStyle={styles.inputContainer}
-          secureTextEntry={secureTextEntryPassword}
-          icon={require("../assets/eyeIcon.png")}
-          iconOnPress={() =>
-            setSecureTextEntryPassword(!secureTextEntryPassword)
-          }
-          errorText={validationError.password}
-        />
-        <Input
-          text="Confirm password"
-          placeholder="Enter your password again"
-          value={confirmPassword}
-          onChange={(value) => handleInputConfirmPassword(value)}
-          containerStyle={styles.inputContainer}
-          secureTextEntry={secureTextEntryConfirmPassword}
-          icon={require("../assets/eyeIcon.png")}
-          iconOnPress={() =>
-            setSecureTextEntryConfirmPassword(!secureTextEntryConfirmPassword)
-          }
-
-        />
-        {
-          apiError.map((value, index) =>
-            <View key={index}>
+        <Input text="Email address" placeholder="Enter your email address" value={email} onChange={value => handleInputEmail(value)} containerStyle={styles.inputContainer} errorText={validationError.email} />
+        <Input text="Password" placeholder="Enter your password" value={password} onChange={value => handleInputPassword(value)} containerStyle={styles.inputContainer} secureTextEntry={secureTextEntryPassword} icon={require("../assets/eyeIcon.png")} iconOnPress={() => setSecureTextEntryPassword(!secureTextEntryPassword)} errorText={validationError.password} />
+        <Input text="Confirm password" placeholder="Enter your password again" value={confirmPassword} onChange={value => handleInputConfirmPassword(value)} containerStyle={styles.inputContainer} secureTextEntry={secureTextEntryConfirmPassword} icon={require("../assets/eyeIcon.png")} iconOnPress={() => setSecureTextEntryConfirmPassword(!secureTextEntryConfirmPassword)} />
+        {apiError.map((value, index) => <View key={index}>
               <Text style={styles.error1}>{value[Object.keys(value)[index]].toString()}</Text>
-            </View>
-          )
-        }
+            </View>)}
         <RadioButton.Group onValueChange={newValue => setUserType(newValue)} value={userType}>
           <View style={styles.radioContainer}>
           <View style={styles.radioSection}>
-            <RadioButton value="professional" color="#000"/>
+            <RadioButton value="professional" color="#000" />
             <Text>Service Provider</Text>
           </View>
-          <View style={[styles.radioSection, {marginLeft: 20}]}>
-            <RadioButton value="client" color="#000"/>
+          <View style={[styles.radioSection, styles.UmhQEoiA]}>
+            <RadioButton value="client" color="#000" />
             <Text>Client</Text>
           </View>
           </View>
         </RadioButton.Group>
 
         <View style={styles.flexRow}>
-          <Checkbox
-            value={isCheck}
-            setValue={setIsCheck}
-            style={styles.checkbox}
-          />
+          <Checkbox value={isCheck} setValue={setIsCheck} style={styles.checkbox} />
           <Text style={styles.description}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Non at sed.
           </Text>
@@ -458,20 +352,13 @@ export const SignUp = ({ navigation }) => {
         <View style={styles.flexRow}>
           <Button1 buttonText="Sign Up" style={styles.button} onPress={onSignupPress} />
           <Pressable style={styles.fingerprintButton}>
-            <Image
-              source={require("../assets/fingerprintIcon.png")}
-              style={styles.fingerprintIcon}
-            />
+            <Image source={require("../assets/fingerprintIcon.png")} style={styles.fingerprintIcon} />
           </Pressable>
         </View>
         <Text style={styles.separatorText}>Or Sign Up with</Text>
         <SocialButton text="Apple" icon={require("../assets/appleIcon.png")} onPress={() => onAppleConnect(dispatch, navigation)} />
         <SocialButton text="Google" icon={require("../assets/googleIcon.png")} onPress={() => onGoogleConnect(dispatch, navigation)} />
-        <SocialButton
-          text="Facebook"
-          icon={require("../assets/facebookIcon.png")}
-          onPress={() => onFacebookConnect(dispatch, navigation)}
-        />
+        <SocialButton text="Facebook" icon={require("../assets/facebookIcon.png")} onPress={() => onFacebookConnect(dispatch, navigation)} />
         <View style={styles.footer}>
           <Text style={styles.footerText}>I have an account. </Text>
           <Pressable onPress={() => navigation.navigate("LoginScreen")}>
@@ -479,8 +366,7 @@ export const SignUp = ({ navigation }) => {
           </Pressable>
         </View>
       </ScrollView>
-    </View>
-  );
+    </View>;
 };
 const styles = StyleSheet.create({
   container: {
@@ -564,66 +450,34 @@ const styles = StyleSheet.create({
     color: '#f77474',
     fontStyle: 'italic',
     fontSize: 14,
-    paddingHorizontal: 10,
+    paddingHorizontal: 10
   },
-  radioSection:{
+  radioSection: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",    
+    alignItems: "center"
   },
-  radioContainer:{
+  radioContainer: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    alignItems: "center", 
+    alignItems: "center"
+  },
+  UmhQEoiA: {
+    marginLeft: 20
   }
 });
 
-
 const Input = props => {
-  return (
-    <View style={[inputStyles.inputContainer, props.containerStyle]}>
-      {props.text
-        ? (
-          <Text style={inputStyles.inputText}>{props.text}</Text>
-        )
-        : null}
+  return <View style={[inputStyles.inputContainer, props.containerStyle]}>
+      {props.text ? <Text style={inputStyles.inputText}>{props.text}</Text> : null}
 
-      <TextInput
-        style={[
-          inputStyles.input,
-          props.style,
-          props.textArea ? inputStyles.textArea : null
-        ]}
-        placeholder={props.placeholder ? props.placeholder : "Enter"}
-        value={props.value}
-        onChangeText={(value) => props.onChange(value)}
-        placeholderTextColor={
-          props.placeholderTextColor ? props.placeholderTextColor : "#9B9B9B"
-        }
-        editable={props.editable !== false}
-        autoCapitalize="none"
-        autoCorrect={false}
-        multiline={!!props.textArea}
-        backgroundColor={props.backgroundColor}
-        secureTextEntry={props.secureTextEntry}
-      />
-      {props.errorText
-        ? (
-          <Text style={inputStyles.error}>{props.errorText}</Text>
-        )
-        : null}
-      {props.icon
-        ? (
-          <Pressable
-            onPress={() => props.iconOnPress()}
-            style={inputStyles.iconWithText}>
+      <TextInput style={[inputStyles.input, props.style, props.textArea ? inputStyles.textArea : null]} placeholder={props.placeholder ? props.placeholder : "Enter"} value={props.value} onChangeText={value => props.onChange(value)} placeholderTextColor={props.placeholderTextColor ? props.placeholderTextColor : "#9B9B9B"} editable={props.editable !== false} autoCapitalize="none" autoCorrect={false} multiline={!!props.textArea} backgroundColor={props.backgroundColor} secureTextEntry={props.secureTextEntry} />
+      {props.errorText ? <Text style={inputStyles.error}>{props.errorText}</Text> : null}
+      {props.icon ? <Pressable onPress={() => props.iconOnPress()} style={inputStyles.iconWithText}>
             <Image source={props.icon} style={inputStyles.icon} />
-          </Pressable>
-        )
-        : null}
+          </Pressable> : null}
       <View style={inputStyles.children}>{props.children}</View>
-    </View>
-  );
+    </View>;
 };
 
 const inputStyles = StyleSheet.create({
@@ -666,30 +520,21 @@ const inputStyles = StyleSheet.create({
     height: 150
   },
   children: {},
-  error: { color: "#f77474" }
+  error: {
+    color: "#f77474"
+  }
 });
 
 const Checkbox = props => {
-  return (
-    <Pressable
-      onPress={() => {
-        props.setValue(!props.value);
-      }}
-      style={[checkboxStyles.container, props.style]}>
-      <Image
-        source={
-          props.value
-            ? require("../assets/checkboxIconActive.png")
-            : require("../assets/checkboxIcon.png")
-        }
-        style={[
-          checkboxStyles.checkbox,
-          props.color && { tintColor: props.color },
-          props.activeColor && props.value && { tintColor: props.activeColor }
-        ]}
-      />
-    </Pressable>
-  );
+  return <Pressable onPress={() => {
+    props.setValue(!props.value);
+  }} style={[checkboxStyles.container, props.style]}>
+      <Image source={props.value ? require("../assets/checkboxIconActive.png") : require("../assets/checkboxIcon.png")} style={[checkboxStyles.checkbox, props.color && {
+      tintColor: props.color
+    }, props.activeColor && props.value && {
+      tintColor: props.activeColor
+    }]} />
+    </Pressable>;
 };
 
 const checkboxStyles = StyleSheet.create({
@@ -715,20 +560,16 @@ const Button1 = params => {
   const btnText = {
     color: textColor
   };
-  return (
-    <View style={[buttonStyles1.btnContainer, params.style]}>
+  return <View style={[buttonStyles1.btnContainer, params.style]}>
       <View style={!params.hideShadow ? buttonStyles1.shadowContainer : null}>
-        <Pressable
-          style={[buttonStyles1.btn, btnStyle]}
-          onPress={params.onPress}>
+        <Pressable style={[buttonStyles1.btn, btnStyle]} onPress={params.onPress}>
           <Text style={[buttonStyles1.btnText, btnText]}>
             {params.buttonText}
           </Text>
           <View style={buttonStyles1.childrenContainer}>{params.children}</View>
         </Pressable>
       </View>
-    </View>
-  );
+    </View>;
 };
 
 const buttonStyles1 = StyleSheet.create({
@@ -754,7 +595,6 @@ const buttonStyles1 = StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-
     flexDirection: "row"
   },
   btnText: {
@@ -769,14 +609,10 @@ const buttonStyles1 = StyleSheet.create({
 });
 
 const SocialButton = props => {
-  return (
-    <Pressable
-      style={[socialButtonStyles.container, props.style]}
-      onPress={props.onPress}>
+  return <Pressable style={[socialButtonStyles.container, props.style]} onPress={props.onPress}>
       <Image source={props.icon} style={socialButtonStyles.icon} />
       <Text style={socialButtonStyles.text}>Sign up via {props.text}</Text>
-    </Pressable>
-  );
+    </Pressable>;
 };
 
 const socialButtonStyles = StyleSheet.create({
@@ -807,21 +643,14 @@ const socialButtonStyles = StyleSheet.create({
   }
 });
 
-
-
-
-
-
-
 const Loader = () => {
-  return (
-    <View style={loaderStyles.container}>
+  return <View style={loaderStyles.container}>
       <View style={loaderStyles.loaderContainer}>
         <ActivityIndicator color="#000" />
       </View>
-    </View>
-  );
+    </View>;
 };
+
 const loaderStyles = StyleSheet.create({
   container: {
     width: "100%",

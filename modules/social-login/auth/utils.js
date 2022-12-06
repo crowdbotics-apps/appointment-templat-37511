@@ -1,11 +1,9 @@
 // Please, update the values below as instructed in the README.md file.
-export const GOOGLE_WEB_CLIENT_ID ='xxxxxxx.apps.googleusercontent.com'
-export const GOOGLE_IOS_CLIENT_ID = "xxxxxxx.apps.googleusercontent.com"
-export const APPLE_SERVICE_ID = "com.crowdbotics.ecommerce_37121"
-export const APPLE_REDIRECT_CALLBACK =
-  "https://ecommerce-37121.botics.co/accounts/apple/login/callback/"
+export const GOOGLE_WEB_CLIENT_ID = 'xxxxxxx.apps.googleusercontent.com';
+export const GOOGLE_IOS_CLIENT_ID = "xxxxxxx.apps.googleusercontent.com";
+export const APPLE_SERVICE_ID = "com.crowdbotics.ecommerce_37121";
+export const APPLE_REDIRECT_CALLBACK = "https://ecommerce-37121.botics.co/accounts/apple/login/callback/"; // -----------------------------------------------------
 
-// -----------------------------------------------------
 const messageMap = {
   "Request failed with status code 400": {
     code: 400,
@@ -21,14 +19,14 @@ const messageMap = {
   },
   "Network Error": {
     code: null,
-    message:
-      "Network Error: It was not possible to establish a connection with the server."
+    message: "Network Error: It was not possible to establish a connection with the server."
   }
 };
-
 export const mapErrorMessage = error => {
   const message = error.message;
-  return messageMap[message]
-    ? { ...messageMap[message] }
-    : { code: null, message };
+  return messageMap[message] ? { ...messageMap[message]
+  } : {
+    code: null,
+    message
+  };
 };
